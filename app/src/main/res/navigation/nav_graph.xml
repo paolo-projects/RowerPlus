@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="it.paoloinfante.rowerplus.navigation.MainFragment"
+        android:label="Rower"
+        tools:layout="@layout/fragment_main_content" />
+    <fragment
+        android:id="@+id/allWorkoutsFragment"
+        android:name="it.paoloinfante.rowerplus.navigation.AllWorkoutsFragment"
+        android:label="Workouts"
+
+        tools:layout="@layout/fragment_all_workouts" />
+</navigation>

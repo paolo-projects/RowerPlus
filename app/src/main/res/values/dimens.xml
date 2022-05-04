@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="trainingInfoMargin">8dp</dimen>
+    <dimen name="primary_workout_text_size">170sp</dimen>
+    <dimen name="trainingInfoArrowSize">72dp</dimen>
+    <dimen name="secondary_workout_text_size">36sp</dimen>
+    <dimen name="primary_workout_text_title_size">48sp</dimen>
+    <dimen name="secondary_workout_text_title_size">18sp</dimen>
+    <dimen name="workoute_recyclerview_item_padding">8dp</dimen>
+    <dimen name="workout_recyclerview_title_size">18sp</dimen>
+</resources>

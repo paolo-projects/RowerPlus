@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/mainFragment"
+            android:title="@string/menu_main_title"
+            android:icon="@drawable/ic_baseline_rowing_24" />
+        <item
+            android:id="@+id/allWorkoutsFragment"
+            android:title="@string/menu_workouts_title"
+            android:icon="@drawable/ic_baseline_list_24" />
+    </group>
+</menu>

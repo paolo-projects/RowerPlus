@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">RowerPlus</string>
+    <string name="training_info_timer_default">00:00</string>
+    <string name="training_info_swipe_left">Scorri a sinistra per cambiare valore</string>
+    <string name="training_info_swipe_right">Scorri a destra per cambiare valore</string>
+    <string name="menu_main_title">Vogatore</string>
+    <string name="menu_workouts_title">Allenamenti</string>
+    <string name="workouts_delete_all_warning">Vuoi davvero cancellare tutti gli allenamenti?</string>
+
+    <string-array name="workout_variables">
+        <item>Tempo</item>
+        <item>Distanza</item>
+        <item>Calorie</item>
+        <item>VPM</item>
+        <item>Tempo/500m</item>
+        <item>Vogate Totali</item>
+    </string-array>
+</resources>
