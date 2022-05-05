@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/delete_all"
-        android:title="Delete All"
+    <item android:id="@+id/delete_some"
+        android:title="@string/all_workouts_menu_delete_some"
         android:icon="@drawable/ic_baseline_delete_24"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
+        />
+    <item android:id="@+id/delete_all"
+        android:title="@string/all_workouts_menu_delete_all"
+        android:icon="@drawable/ic_baseline_delete_sweep_24"
+        app:showAsAction="ifRoom"
         />
 </menu>

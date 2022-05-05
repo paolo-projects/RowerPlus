@@ -1,20 +1,47 @@
 <resources>
     <string name="timer_format" translatable="false">%02d:%02d</string>
     <string name="distance_format" translatable="false">%.0f m</string>
-    <string name="calories_format" translatable="false">%.1f cal</string>
+    <string name="calories_format" translatable="false">%.1f kcal</string>
     <string name="current_rpm_format" translatable="false">%.1f</string>
-    <string name="secs_for_500m_format" translatable="false">%.1f</string>
+    <string name="time_for_500m_format" translatable="false">%02d:%02d</string>
     <string name="total_rows_format" translatable="false">%d</string>
 
     <string name="database_name" translatable="false">rower_plus_db</string>
 
     <string name="app_name">RowerPlus</string>
-    <string name="training_info_timer_default">00:00</string>
+    <string name="training_info_timer_default">-</string>
     <string name="training_info_swipe_left">Swipe left to change info</string>
     <string name="training_info_swipe_right">Swipe right to change info</string>
     <string name="menu_main_title">Rower</string>
     <string name="menu_workouts_title">All Workouts</string>
     <string name="workouts_delete_all_warning">Do you really want to delete all the workouts?</string>
+    <string name="error_no_usb_devices">No USB devices available</string>
+    <string name="error_permission_rejected_title">Permissions rejected</string>
+    <string name="error_permission_rejected_message">The permissions for the USB device have not been granted</string>
+    <string name="error_permission_error_title">Permissions error</string>
+    <string name="error_permission_error_message">An error occurred while gathering USB device permissions</string>
+    <string name="message_ok">OK</string>
+    <string name="message_connection_successful">Connection to USB device successful!</string>
+    <string name="error_device_disconnected">USB device disconnected! Retrying in a little while…</string>
+    <string name="all_workouts_actionmode_title">Edit workouts</string>
+    <string name="all_workouts_selection_format">%d selected</string>
+    <string name="all_workouts_menu_delete_all">Delete All</string>
+    <string name="all_workouts_menu_delete_some">Delete</string>
+    <string name="message_no">No</string>
+    <string name="message_yes">Yes</string>
+    <string name="workouts_delete_selected_warning">Do you really want to delete the %d selected workouts?</string>
+    <string name="single_workout_menu_delete">Delete</string>
+    <string name="workout_delete_confirmation_message">Do you really want to delete this workout?</string>
+    <string name="performance_distance_chart_series">Distance (m)</string>
+    <string name="performance_rpm_chart_series">RPM</string>
+    <string name="workout_performance_distance_label">Distance</string>
+    <string name="workout_performance_rpm_label">Rows per Minute</string>
+    <string name="workout_performance_calories_label">Calories</string>
+    <string name="performance_calories_chart_series">Calories (kcal)</string>
+    <string name="single_workout_menu_export">Export to Excel file</string>
+    <string name="navigation_workouts_label">Workouts</string>
+    <string name="navigation_workout_label">Workout</string>
+    <string name="navigation_rower_label">Rower</string>
 
     <string-array name="workout_variables">
         <item>Time</item>

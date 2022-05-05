@@ -10,7 +10,9 @@ import android.hardware.usb.UsbManager
 import android.os.Bundle
 import android.os.IBinder
 import android.view.MenuItem
+import android.view.Window
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -32,6 +34,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import it.paoloinfante.rowerplus.adapters.WorkoutDataViewsAdapter
 import it.paoloinfante.rowerplus.database.models.Workout
 import it.paoloinfante.rowerplus.database.repositories.WorkoutRepository
+import it.paoloinfante.rowerplus.fragments.viewmodels.WorkoutDataViewViewModel
 import it.paoloinfante.rowerplus.receiver.RowerConnectionStatusBroadcastReceiver
 import it.paoloinfante.rowerplus.receiver.UsbPermissionBroadcastReceiver
 import it.paoloinfante.rowerplus.services.RowerDataService
@@ -60,10 +63,10 @@ class MainActivity : AppCompatActivity(), UsbPermissionBroadcastReceiver.OnPermi
     private lateinit var toolbar: Toolbar
     private lateinit var drawerToggle: ActionBarDrawerToggle
 
+    private val workoutDataViewViewModel by viewModels<WorkoutDataViewViewModel>()
+
     private val rowerConnectionStatusBroadcastReceiver =
         RowerConnectionStatusBroadcastReceiver(this)
-
-    @Inject lateinit var workoutRepository: WorkoutRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,17 +93,18 @@ class MainActivity : AppCompatActivity(), UsbPermissionBroadcastReceiver.OnPermi
     private fun configureNavigationDrawer()
     {
         val navController = (supportFragmentManager.findFragmentById(R.id.fragmentContainer) as NavHostFragment).navController
+        setSupportActionBar(toolbar)
         NavigationUI.setupWithNavController(toolbar, navController, drawerLayout)
         NavigationUI.setupWithNavController(navigationView, navController)
     }
 
     private fun configureToolbar()
     {
-        toolbar.setNavigationIcon(R.drawable.ic_baseline_menu_24)
+        /*toolbar.setNavigationIcon(R.drawable.ic_baseline_menu_24)
         setSupportActionBar(toolbar)
         drawerToggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, 0, 0)
         drawerToggle.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24)
-        drawerLayout.addDrawerListener(drawerToggle)
+        drawerLayout.addDrawerListener(drawerToggle)*/
     }
 
     private fun connectToDevice(device: UsbDevice?) {
@@ -129,7 +133,7 @@ class MainActivity : AppCompatActivity(), UsbPermissionBroadcastReceiver.OnPermi
                 startDataCollectionService()
             }
         } else {
-            Toast.makeText(this, "No USB devices available", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.error_no_usb_devices), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -145,17 +149,17 @@ class MainActivity : AppCompatActivity(), UsbPermissionBroadcastReceiver.OnPermi
 
     override fun permissionRejected() {
         AlertDialog.Builder(this)
-            .setTitle("Permissions rejected")
-            .setMessage("The permissions for the USB device have not been granted")
-            .setPositiveButton("OK", null)
+            .setTitle(getString(R.string.error_permission_rejected_title))
+            .setMessage(getString(R.string.error_permission_rejected_message))
+            .setPositiveButton(getString(R.string.message_ok), null)
             .create().show()
     }
 
     override fun permissionError() {
         AlertDialog.Builder(this)
-            .setTitle("Permissions error")
-            .setMessage("An error occurred while gathering USB device permissions")
-            .setPositiveButton("OK", null)
+            .setTitle(getString(R.string.error_permission_error_title))
+            .setMessage(getString(R.string.error_permission_error_message))
+            .setPositiveButton(getString(R.string.message_ok), null)
             .create().show()
     }
 
@@ -184,11 +188,11 @@ class MainActivity : AppCompatActivity(), UsbPermissionBroadcastReceiver.OnPermi
     }
 
     override fun onConnected() {
-
-        Toast.makeText(this, "Connection to USB device successful!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.message_connection_successful), Toast.LENGTH_SHORT).show()
+        workoutDataViewViewModel.startDataCollection()
     }
 
     override fun onDisconnected() {
-        Toast.makeText(this, "USB device disconnected! Retrying in a little while...", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.error_device_disconnected), Toast.LENGTH_SHORT).show()
     }
 }

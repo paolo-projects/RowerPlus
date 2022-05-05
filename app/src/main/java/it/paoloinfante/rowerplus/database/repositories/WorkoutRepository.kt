@@ -19,8 +19,16 @@ class WorkoutRepository @Inject constructor(private val workoutDao: WorkoutDao) 
         return workoutDao.getWorkoutsWithStatuses()
     }
 
+    fun getWorkout(id: Int): Flow<WorkoutWithStatuses?> {
+        return workoutDao.getWorkout(id)
+    }
+
     suspend fun deleteById(id: Int) {
         workoutDao.deleteById(id)
+    }
+
+    suspend fun deleteByIds(ids: List<Int>) {
+        workoutDao.deleteByIds(ids)
     }
 
     suspend fun deleteAll() {

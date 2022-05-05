@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Node MCU ESP8266 (the embedded USB-To-UART Device) -->
     <usb-device vendor-id="6790" product-id="29987" />
 </resources>

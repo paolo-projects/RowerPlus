@@ -1,6 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.RowerPlus" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="windowActionModeOverlay">true</item>
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
@@ -12,6 +13,9 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="textColor">@color/black</item>
         <item name="toolbarBackground">@color/blackLucidColor</item>
+        <item name="selectionOverlayColor">@color/moreBlackLucidColor</item>
+        <item name="listItemBackground">@color/blackLucidColor</item>
     </style>
 </resources>

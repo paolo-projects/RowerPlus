@@ -1,21 +1,16 @@
 package it.paoloinfante.rowerplus.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import it.paoloinfante.rowerplus.R
-import it.paoloinfante.rowerplus.database.models.WorkoutStatus
 import it.paoloinfante.rowerplus.fragments.viewmodels.WorkoutDataViewViewModel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
+import it.paoloinfante.rowerplus.models.TimerData
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -71,7 +66,7 @@ class WorkoutDataViewFragment(
         setTitles()
 
         lifecycleScope.launch {
-            workoutDataViewModel.getLastStatus().collectLatest {
+            workoutDataViewModel.timerData.collect {
                 onNewStatus(it)
             }
         }
@@ -87,10 +82,10 @@ class WorkoutDataViewFragment(
         view6TitleTextView.text = remainingDataViews[4]
     }
 
-    private fun onNewStatus(workoutStatus: WorkoutStatus?) {
+    private fun onNewStatus(workoutStatus: TimerData) {
         Log.d(TAG, "workoutLiveDataUpdate: $workoutStatus")
 
-        if(workoutStatus == null) {
+        if (workoutStatus == null) {
             return
         }
 
@@ -108,7 +103,10 @@ class WorkoutDataViewFragment(
                 view4TextView.text =
                     getString(R.string.current_rpm_format).format(workoutStatus.currentRPM)
                 view5TextView.text =
-                    getString(R.string.secs_for_500m_format).format(workoutStatus.currentSecsFor500M)
+                    getString(R.string.time_for_500m_format).format(
+                        workoutStatus.currentSecsFor500M.toInt() / 60,
+                        workoutStatus.currentSecsFor500M.toInt() % 60
+                    )
                 view6TextView.text =
                     getString(R.string.total_rows_format).format(workoutStatus.rowsCount)
             }
@@ -125,7 +123,10 @@ class WorkoutDataViewFragment(
                 view4TextView.text =
                     getString(R.string.current_rpm_format).format(workoutStatus.currentRPM)
                 view5TextView.text =
-                    getString(R.string.secs_for_500m_format).format(workoutStatus.currentSecsFor500M)
+                    getString(R.string.time_for_500m_format).format(
+                        workoutStatus.currentSecsFor500M.toInt() / 60,
+                        workoutStatus.currentSecsFor500M.toInt() % 60
+                    )
                 view6TextView.text =
                     getString(R.string.total_rows_format).format(workoutStatus.rowsCount)
             }
@@ -142,7 +143,10 @@ class WorkoutDataViewFragment(
                 view4TextView.text =
                     getString(R.string.current_rpm_format).format(workoutStatus.currentRPM)
                 view5TextView.text =
-                    getString(R.string.secs_for_500m_format).format(workoutStatus.currentSecsFor500M)
+                    getString(R.string.time_for_500m_format).format(
+                        workoutStatus.currentSecsFor500M.toInt() / 60,
+                        workoutStatus.currentSecsFor500M.toInt() % 60
+                    )
                 view6TextView.text =
                     getString(R.string.total_rows_format).format(workoutStatus.rowsCount)
             }
@@ -159,7 +163,10 @@ class WorkoutDataViewFragment(
                 mainTextView.text =
                     getString(R.string.current_rpm_format).format(workoutStatus.currentRPM)
                 view5TextView.text =
-                    getString(R.string.secs_for_500m_format).format(workoutStatus.currentSecsFor500M)
+                    getString(R.string.time_for_500m_format).format(
+                        workoutStatus.currentSecsFor500M.toInt() / 60,
+                        workoutStatus.currentSecsFor500M.toInt() % 60
+                    )
                 view6TextView.text =
                     getString(R.string.total_rows_format).format(workoutStatus.rowsCount)
             }
@@ -176,7 +183,10 @@ class WorkoutDataViewFragment(
                 view5TextView.text =
                     getString(R.string.current_rpm_format).format(workoutStatus.currentRPM)
                 mainTextView.text =
-                    getString(R.string.secs_for_500m_format).format(workoutStatus.currentSecsFor500M)
+                    getString(R.string.time_for_500m_format).format(
+                        workoutStatus.currentSecsFor500M.toInt() / 60,
+                        workoutStatus.currentSecsFor500M.toInt() % 60
+                    )
                 view6TextView.text =
                     getString(R.string.total_rows_format).format(workoutStatus.rowsCount)
             }
@@ -193,7 +203,10 @@ class WorkoutDataViewFragment(
                 view5TextView.text =
                     getString(R.string.current_rpm_format).format(workoutStatus.currentRPM)
                 view6TextView.text =
-                    getString(R.string.secs_for_500m_format).format(workoutStatus.currentSecsFor500M)
+                    getString(R.string.time_for_500m_format).format(
+                        workoutStatus.currentSecsFor500M.toInt() / 60,
+                        workoutStatus.currentSecsFor500M.toInt() % 60
+                    )
                 mainTextView.text =
                     getString(R.string.total_rows_format).format(workoutStatus.rowsCount)
             }

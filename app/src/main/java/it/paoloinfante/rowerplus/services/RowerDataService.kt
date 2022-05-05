@@ -23,6 +23,7 @@ import it.paoloinfante.rowerplus.database.repositories.WorkoutStatusRepository
 import it.paoloinfante.rowerplus.models.RowerPull
 import it.paoloinfante.rowerplus.receiver.RowerConnectionStatusBroadcastReceiver
 import it.paoloinfante.rowerplus.serial.RowerSerialMcu
+import it.paoloinfante.rowerplus.utils.RowerDataParser
 import it.paoloinfante.rowerplus.utils.Stopwatch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,6 +43,8 @@ class RowerDataService : Service(), RowerSerialMcu.RowerSerialDataListener {
 
     private var ROWS_PER_CALORIE: Float = 0f
     private var METERS_PER_ROW: Float = 0f
+
+    private lateinit var rowerDataParser: RowerDataParser
 
     private lateinit var rowerSerialMcu: RowerSerialMcu
     private lateinit var workoutStatus: WorkoutStatus
@@ -72,6 +75,8 @@ class RowerDataService : Service(), RowerSerialMcu.RowerSerialDataListener {
         val metersPerRowTyped = TypedValue()
         resources.getValue(R.dimen.meters_per_row, metersPerRowTyped, true)
         METERS_PER_ROW = metersPerRowTyped.float
+
+        rowerDataParser = RowerDataParser(ROWS_PER_CALORIE, METERS_PER_ROW)
     }
 
     override fun onBind(p0: Intent?): IBinder {
@@ -96,18 +101,8 @@ class RowerDataService : Service(), RowerSerialMcu.RowerSerialDataListener {
             resources.getInteger(R.integer.rowing_timer_timeout_ms).toLong()
         )
 
-        workoutStatus.timeElapsed = floor(elapsedTimeStopwatch.elapsedSeconds).toInt()
-        workoutStatus.calories += 1f / ROWS_PER_CALORIE
-        workoutStatus.distance += METERS_PER_ROW
-        workoutStatus.rowsCount++
+        rowerDataParser.parseData(pull, workoutStatus, elapsedTimeStopwatch)
 
-        val newRowTime = Date()
-        if (workoutStatus.rowsCount > 0) {
-            workoutStatus.currentRPM = 60000f / (newRowTime.time - lastRowTime.time)
-            workoutStatus.currentSecsFor500M =
-                (newRowTime.time - lastRowTime.time).toFloat() / 1000 * (500f / METERS_PER_ROW)
-        }
-        lastRowTime = newRowTime
 
         ioScope.launch {
             workoutStatusRepository.pushStatus(workoutStatus)

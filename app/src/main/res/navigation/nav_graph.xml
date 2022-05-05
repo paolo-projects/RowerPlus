@@ -8,12 +8,24 @@
     <fragment
         android:id="@+id/mainFragment"
         android:name="it.paoloinfante.rowerplus.navigation.MainFragment"
-        android:label="Rower"
+        android:label="@string/navigation_rower_label"
         tools:layout="@layout/fragment_main_content" />
     <fragment
         android:id="@+id/allWorkoutsFragment"
         android:name="it.paoloinfante.rowerplus.navigation.AllWorkoutsFragment"
-        android:label="Workouts"
-
-        tools:layout="@layout/fragment_all_workouts" />
+        android:label="@string/navigation_workouts_label"
+        tools:layout="@layout/fragment_all_workouts" >
+        <action
+            android:id="@+id/action_allWorkoutsFragment_to_singleWorkoutFragment"
+            app:destination="@id/singleWorkoutFragment"/>
+    </fragment>
+    <fragment
+        android:id="@+id/singleWorkoutFragment"
+        android:name="it.paoloinfante.rowerplus.fragments.SingleWorkoutFragment"
+        android:label="@string/navigation_workout_label"
+        tools:layout="@layout/fragment_single_workout" >
+        <argument
+            android:name="workoutId"
+            app:argType="integer" />
+    </fragment>
 </navigation>

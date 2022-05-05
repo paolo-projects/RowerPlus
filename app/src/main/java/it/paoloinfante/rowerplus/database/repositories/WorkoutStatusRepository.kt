@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class WorkoutStatusRepository @Inject constructor(private val workoutStatusDao: WorkoutStatusDao) {
-    fun getLastStatusForLastWorkout(): Flow<WorkoutStatus> {
+    fun getLastStatusForLastWorkout(): Flow<WorkoutStatus?> {
         return workoutStatusDao.getLastStatusForLastWorkout()
     }
 

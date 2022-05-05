@@ -48,4 +48,11 @@ class Stopwatch(startImmediately: Boolean = false) {
             intervals.last().end = Date()
         }
     }
+
+    /**
+     * Resets the stopwatch, stopping it if previously started
+     */
+    fun reset() {
+        intervals.clear()
+    }
 }

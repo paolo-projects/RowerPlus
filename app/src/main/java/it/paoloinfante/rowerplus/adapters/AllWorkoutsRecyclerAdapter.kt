@@ -5,19 +5,41 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.selection.ItemDetailsLookup
+import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
 import it.paoloinfante.rowerplus.R
 import it.paoloinfante.rowerplus.database.models.WorkoutWithStatuses
+import kotlin.math.floor
 
-class AllWorkoutsRecyclerAdapter(private val mContext: Context, workouts: List<WorkoutWithStatuses>): RecyclerView.Adapter<AllWorkoutsRecyclerAdapter.ViewHolder>() {
-    private val workouts = ArrayList<WorkoutWithStatuses>()
+class AllWorkoutsRecyclerAdapter(
+    private val mContext: Context,
+    workouts: List<WorkoutWithStatuses>,
+    private val actionListener: Actions
+) : RecyclerView.Adapter<AllWorkoutsRecyclerAdapter.ViewHolder>() {
+    val workouts = ArrayList<WorkoutWithStatuses>()
+    var tracker: SelectionTracker<Long>? = null
+    private var selectedColor: Int = 0
+    private var normalColor: Int = 0
+
+    interface Actions {
+        fun onItemClick(id: Int?)
+    }
 
     init {
+        val selectedColorAttr = intArrayOf(R.attr.selectionOverlayColor, R.attr.listItemBackground)
+        val arr =
+            mContext.theme.obtainStyledAttributes(selectedColorAttr)
+        selectedColor = arr.getColor(0, mContext.getColor(R.color.moreLucidColor))
+        normalColor = arr.getColor(1 as Int, mContext.getColor(R.color.lucidColor))
+        arr.recycle()
+
         this.workouts.addAll(workouts)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val layoutInflater = mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val layoutInflater =
+            mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
         val rootView = layoutInflater.inflate(R.layout.itemview_workout, parent, false)
 
@@ -26,7 +48,7 @@ class AllWorkoutsRecyclerAdapter(private val mContext: Context, workouts: List<W
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val workout = workouts[position]
-        holder.workoutName.text = workout.workout.name
+        holder.bind(workout)
     }
 
     override fun getItemCount(): Int {
@@ -43,7 +65,56 @@ class AllWorkoutsRecyclerAdapter(private val mContext: Context, workouts: List<W
         notifyItemRangeInserted(0, this.workouts.size)
     }
 
-    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        val workoutName = itemView.findViewById<TextView>(R.id.workoutName)
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun getItem() = object : ItemDetailsLookup.ItemDetails<Long>() {
+            override fun getPosition(): Int {
+                return adapterPosition
+            }
+
+            override fun getSelectionKey(): Long? {
+                return workouts[adapterPosition].workout.id?.toLong()
+            }
+        }
+
+        fun bind(item: WorkoutWithStatuses) {
+            workoutName.text = item.workout.name
+
+            if(item.workoutStatuses.isNotEmpty()) {
+                val time = item.workoutStatuses.maxOf { it.timeElapsed }
+                workoutTime.text = mContext.getString(
+                    R.string.timer_format,
+                    floor(time / 60f).toInt(), (time % 60)
+                )
+                workoutDistance.text = mContext.getString(
+                    R.string.distance_format,
+                    item.workoutStatuses.maxOf { it.distance })
+                workoutCalories.text = mContext.getString(
+                    R.string.calories_format,
+                    item.workoutStatuses.maxOf { it.calories })
+            } else {
+                workoutTime.text = "-"
+                workoutDistance.text = "-"
+                workoutCalories.text = "-"
+            }
+
+            tracker?.let {
+                if (it.isSelected(item.workout.id?.toLong())) {
+                    itemView.setBackgroundColor(selectedColor)
+                } else {
+                    itemView.setBackgroundColor(normalColor)
+                }
+            }
+
+            itemView.setOnClickListener {
+                if (tracker?.selection == null || tracker?.selection?.size() == 0) {
+                    actionListener.onItemClick(workouts[adapterPosition].workout.id)
+                }
+            }
+        }
+
+        val workoutName: TextView = itemView.findViewById(R.id.workoutName)
+        val workoutTime: TextView = itemView.findViewById(R.id.workoutTime)
+        val workoutDistance: TextView = itemView.findViewById(R.id.workoutDistance)
+        val workoutCalories: TextView = itemView.findViewById(R.id.workoutCalories)
     }
 }
