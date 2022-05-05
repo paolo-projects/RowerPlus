@@ -196,7 +196,7 @@ class SingleWorkoutFragment : Fragment(R.layout.fragment_single_workout) {
             e.printStackTrace()
             Toast.makeText(
                 requireContext(),
-                "An error occurred while creating the file",
+                getString(R.string.error_createfile),
                 Toast.LENGTH_SHORT
             ).show()
         }

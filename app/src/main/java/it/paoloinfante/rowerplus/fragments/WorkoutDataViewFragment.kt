@@ -83,6 +83,8 @@ class WorkoutDataViewFragment(
     }
 
     private fun onNewStatus(workoutStatus: TimerData) {
+        //TODO: Could as well remove redundancy here
+
         Log.d(TAG, "workoutLiveDataUpdate: $workoutStatus")
 
         if (workoutStatus == null) {

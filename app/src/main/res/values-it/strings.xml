@@ -34,6 +34,12 @@
     <string name="navigation_workouts_label">Allenamenti</string>
     <string name="navigation_workout_label">Allenamento</string>
     <string name="navigation_rower_label">Vogatore</string>
+    <string name="error_createfile">Si è verificato un errore nella creazione del file</string>
+    <string name="alert_overlay_permission_title">Permesso richiesto per il widget in overlay</string>
+    <string name="alert_overlay_permission_message">Abilita \'Mostra su altre app\' dalle impostazioni di sistema.</string>
+    <string name="alert_overlay_permission_open_settings">Apri impostazioni</string>
+    <string name="floating_window_close_button_content_description">Chiudi</string>
+
 
     <string-array name="workout_variables">
         <item>Tempo</item>

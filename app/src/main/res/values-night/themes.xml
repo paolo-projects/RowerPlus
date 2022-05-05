@@ -17,5 +17,7 @@
         <item name="toolbarBackground">@color/lucidColor</item>
         <item name="selectionOverlayColor">@color/moreLucidColor</item>
         <item name="listItemBackground">@color/lucidColor</item>
+
+        <item name="floatingWindowBackgroundColor">@color/carbon</item>
     </style>
 </resources>

@@ -1,54 +1,45 @@
 package it.paoloinfante.rowerplus
 
-import android.app.ActionBar
 import android.app.AlertDialog
 import android.app.PendingIntent
 import android.content.*
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbDeviceConnection
 import android.hardware.usb.UsbManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.provider.Settings
 import android.view.MenuItem
-import android.view.Window
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.onNavDestinationSelected
-import androidx.navigation.ui.setupWithNavController
-import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.navigation.NavigationView
 import com.hoho.android.usbserial.driver.UsbSerialDriver
 import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
 import dagger.hilt.android.AndroidEntryPoint
-import it.paoloinfante.rowerplus.adapters.WorkoutDataViewsAdapter
-import it.paoloinfante.rowerplus.database.models.Workout
-import it.paoloinfante.rowerplus.database.repositories.WorkoutRepository
 import it.paoloinfante.rowerplus.fragments.viewmodels.WorkoutDataViewViewModel
 import it.paoloinfante.rowerplus.models.TimerData
+import it.paoloinfante.rowerplus.receiver.FloatingWindowReceiver
 import it.paoloinfante.rowerplus.receiver.RowerConnectionStatusBroadcastReceiver
 import it.paoloinfante.rowerplus.receiver.RowerDataBroadcastReceiver
 import it.paoloinfante.rowerplus.receiver.UsbPermissionBroadcastReceiver
+import it.paoloinfante.rowerplus.services.FloatingWindowService
 import it.paoloinfante.rowerplus.services.RowerDataService
-import it.paoloinfante.rowerplus.utils.DepthPageTransformer
-import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
-import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), UsbPermissionBroadcastReceiver.OnPermissionResult,
-    RowerConnectionStatusBroadcastReceiver.ConnectionStatusListener, RowerDataBroadcastReceiver.DataReceivedListener {
+    RowerConnectionStatusBroadcastReceiver.ConnectionStatusListener,
+    RowerDataBroadcastReceiver.DataReceivedListener {
     companion object {
         private const val TAG = "MainActivity"
     }
@@ -93,12 +84,14 @@ class MainActivity : AppCompatActivity(), UsbPermissionBroadcastReceiver.OnPermi
 
         configureNavigationDrawer()
 
+        checkOverlayDisplayPermission()
+
         connectToDevice(intent.getParcelableExtra(UsbManager.EXTRA_DEVICE))
     }
 
-    private fun configureNavigationDrawer()
-    {
-        val navController = (supportFragmentManager.findFragmentById(R.id.fragmentContainer) as NavHostFragment).navController
+    private fun configureNavigationDrawer() {
+        val navController =
+            (supportFragmentManager.findFragmentById(R.id.fragmentContainer) as NavHostFragment).navController
         setSupportActionBar(toolbar)
         NavigationUI.setupWithNavController(toolbar, navController, drawerLayout)
         NavigationUI.setupWithNavController(navigationView, navController)
@@ -140,6 +133,69 @@ class MainActivity : AppCompatActivity(), UsbPermissionBroadcastReceiver.OnPermi
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        killFloatingWindow()
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        startFloatingWindow()
+    }
+
+    private fun checkOverlayDisplayPermission() {
+        if(!Settings.canDrawOverlays(this)) {
+            requestOverlayDisplayPermission()
+        }
+    }
+
+    private fun requestOverlayDisplayPermission() {
+        // An AlertDialog is created
+        val builder = AlertDialog.Builder(this)
+
+        // This dialog can be closed, just by
+        // taping outside the dialog-box
+        builder.setCancelable(true)
+
+        // The title of the Dialog-box is set
+        builder.setTitle(getString(R.string.alert_overlay_permission_title))
+
+        // The message of the Dialog-box is set
+        builder.setMessage(getString(R.string.alert_overlay_permission_message))
+
+        // The event of the Positive-Button is set
+        builder.setPositiveButton(
+            getString(R.string.alert_overlay_permission_open_settings)
+        ) { _, _ -> // The app will redirect to the 'Display over other apps' in Settings.
+            // This is an Implicit Intent. This is needed when any Action is needed
+            // to perform, here it is
+            // redirecting to an other app(Settings).
+            val intent =
+                Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+
+            // This method will start the intent. It takes two parameter,
+            // one is the Intent and the other is
+            // an requestCode Integer. Here it is -1.
+            startActivity(intent)
+        }
+        val dialog = builder.create()
+        // The Dialog will show in the screen
+        dialog.show()
+    }
+
+    private fun killFloatingWindow() {
+        LocalBroadcastManager.getInstance(this)
+            .sendBroadcast(Intent(FloatingWindowReceiver.INTENT_KEY).apply {
+                putExtra(FloatingWindowReceiver.EXTRA_KILL_SERVICE, true)
+            })
+    }
+
+    private fun startFloatingWindow() {
+        startService(Intent(this, FloatingWindowService::class.java))
+    }
+
     override fun permissionGranted(device: UsbDevice) {
         connectToDevice(device)
     }
@@ -176,16 +232,19 @@ class MainActivity : AppCompatActivity(), UsbPermissionBroadcastReceiver.OnPermi
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val navController = (supportFragmentManager.findFragmentById(R.id.fragmentContainer) as NavHostFragment).navController
+        val navController =
+            (supportFragmentManager.findFragmentById(R.id.fragmentContainer) as NavHostFragment).navController
         return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
     }
 
     override fun onConnected() {
-        Toast.makeText(this, getString(R.string.message_connection_successful), Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.message_connection_successful), Toast.LENGTH_SHORT)
+            .show()
     }
 
     override fun onDisconnected() {
-        Toast.makeText(this, getString(R.string.error_device_disconnected), Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.error_device_disconnected), Toast.LENGTH_SHORT)
+            .show()
     }
 
     override fun onDataReceived(data: TimerData) {

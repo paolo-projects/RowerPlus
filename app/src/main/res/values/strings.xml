@@ -42,6 +42,11 @@
     <string name="navigation_workouts_label">Workouts</string>
     <string name="navigation_workout_label">Workout</string>
     <string name="navigation_rower_label">Rower</string>
+    <string name="error_createfile">An error occurred while creating the file</string>
+    <string name="alert_overlay_permission_title">Screen Overlay Permission Needed</string>
+    <string name="alert_overlay_permission_message">Enable \'Display over other apps\' from System Settings.</string>
+    <string name="alert_overlay_permission_open_settings">Open Settings</string>
+    <string name="floating_window_close_button_content_description">Close</string>
 
     <string-array name="workout_variables">
         <item>Time</item>

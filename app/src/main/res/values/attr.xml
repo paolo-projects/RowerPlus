@@ -4,4 +4,5 @@
     <attr name="selectionOverlayColor" format="color" />
     <attr name="textColor" format="color" />
     <attr name="listItemBackground" format="color" />
+    <attr name="floatingWindowBackgroundColor" format="color" />
 </resources>

@@ -11,6 +11,8 @@
     <color name="blackLucidColor">#05000000</color>
     <color name="moreLucidColor">#10FFFFFF</color>
     <color name="moreBlackLucidColor">#10000000</color>
+    <color name="cream">#FFF5DA</color>
+    <color name="carbon">#161616</color>
 
     <array name="chartSeriesColors">
         <item>#455A64</item>
