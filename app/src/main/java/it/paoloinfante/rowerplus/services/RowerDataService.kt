@@ -10,7 +10,6 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.TypedValue
-import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
@@ -21,7 +20,9 @@ import it.paoloinfante.rowerplus.database.models.WorkoutStatus
 import it.paoloinfante.rowerplus.database.repositories.WorkoutRepository
 import it.paoloinfante.rowerplus.database.repositories.WorkoutStatusRepository
 import it.paoloinfante.rowerplus.models.RowerPull
+import it.paoloinfante.rowerplus.models.TimerData
 import it.paoloinfante.rowerplus.receiver.RowerConnectionStatusBroadcastReceiver
+import it.paoloinfante.rowerplus.receiver.RowerDataBroadcastReceiver
 import it.paoloinfante.rowerplus.serial.RowerSerialMcu
 import it.paoloinfante.rowerplus.utils.RowerDataParser
 import it.paoloinfante.rowerplus.utils.Stopwatch
@@ -32,7 +33,6 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.math.floor
 
 @AndroidEntryPoint
 class RowerDataService : Service(), RowerSerialMcu.RowerSerialDataListener {
@@ -54,8 +54,7 @@ class RowerDataService : Service(), RowerSerialMcu.RowerSerialDataListener {
 
     private var stopWatchPauseTask = Handler(Looper.getMainLooper())
     private var connectionRetryHandler = Handler(Looper.getMainLooper())
-
-    private var lastRowTime: Date = Date()
+    private var timerUpdater: Timer? = null
 
     @Inject
     lateinit var workoutRepository: WorkoutRepository
@@ -103,9 +102,17 @@ class RowerDataService : Service(), RowerSerialMcu.RowerSerialDataListener {
 
         rowerDataParser.parseData(pull, workoutStatus, elapsedTimeStopwatch)
 
-
         ioScope.launch {
             workoutStatusRepository.pushStatus(workoutStatus)
+        }
+
+        if (timerUpdater == null) {
+            timerUpdater = Timer()
+            timerUpdater!!.scheduleAtFixedRate(
+                timerTask,
+                0,
+                resources.getInteger(R.integer.data_update_timer_interval_ms).toLong()
+            )
         }
     }
 
@@ -118,6 +125,25 @@ class RowerDataService : Service(), RowerSerialMcu.RowerSerialDataListener {
     }
 
     private val pauseStopwatch = Runnable { elapsedTimeStopwatch.stop() }
+
+    private val timerTask = object : TimerTask() {
+        override fun run() {
+            LocalBroadcastManager.getInstance(this@RowerDataService)
+                .sendBroadcast(Intent(RowerDataBroadcastReceiver.INTENT_KEY).apply {
+                    putExtra(
+                        RowerDataBroadcastReceiver.EXTRA_TIMER_DATA,
+                        TimerData(
+                            elapsedTimeStopwatch.elapsedSeconds.toInt(),
+                            workoutStatus.calories,
+                            workoutStatus.distance,
+                            workoutStatus.rowsCount,
+                            workoutStatus.currentRPM,
+                            workoutStatus.currentSecsFor500M
+                        )
+                    )
+                })
+        }
+    }
 
     inner class LocalBinder : Binder() {
         fun connect(serialPort: UsbSerialPort, serialDeviceConnection: UsbDeviceConnection) {

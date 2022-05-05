@@ -35,7 +35,9 @@ import it.paoloinfante.rowerplus.adapters.WorkoutDataViewsAdapter
 import it.paoloinfante.rowerplus.database.models.Workout
 import it.paoloinfante.rowerplus.database.repositories.WorkoutRepository
 import it.paoloinfante.rowerplus.fragments.viewmodels.WorkoutDataViewViewModel
+import it.paoloinfante.rowerplus.models.TimerData
 import it.paoloinfante.rowerplus.receiver.RowerConnectionStatusBroadcastReceiver
+import it.paoloinfante.rowerplus.receiver.RowerDataBroadcastReceiver
 import it.paoloinfante.rowerplus.receiver.UsbPermissionBroadcastReceiver
 import it.paoloinfante.rowerplus.services.RowerDataService
 import it.paoloinfante.rowerplus.utils.DepthPageTransformer
@@ -46,7 +48,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), UsbPermissionBroadcastReceiver.OnPermissionResult,
-    RowerConnectionStatusBroadcastReceiver.ConnectionStatusListener {
+    RowerConnectionStatusBroadcastReceiver.ConnectionStatusListener, RowerDataBroadcastReceiver.DataReceivedListener {
     companion object {
         private const val TAG = "MainActivity"
     }
@@ -61,7 +63,7 @@ class MainActivity : AppCompatActivity(), UsbPermissionBroadcastReceiver.OnPermi
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
     private lateinit var toolbar: Toolbar
-    private lateinit var drawerToggle: ActionBarDrawerToggle
+    private val rowerDataBroadcastReceiver = RowerDataBroadcastReceiver(this)
 
     private val workoutDataViewViewModel by viewModels<WorkoutDataViewViewModel>()
 
@@ -84,8 +86,12 @@ class MainActivity : AppCompatActivity(), UsbPermissionBroadcastReceiver.OnPermi
             IntentFilter(RowerConnectionStatusBroadcastReceiver.INTENT_KEY)
         )
 
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+            rowerDataBroadcastReceiver,
+            IntentFilter(RowerDataBroadcastReceiver.INTENT_KEY)
+        )
+
         configureNavigationDrawer()
-        configureToolbar()
 
         connectToDevice(intent.getParcelableExtra(UsbManager.EXTRA_DEVICE))
     }
@@ -96,15 +102,6 @@ class MainActivity : AppCompatActivity(), UsbPermissionBroadcastReceiver.OnPermi
         setSupportActionBar(toolbar)
         NavigationUI.setupWithNavController(toolbar, navController, drawerLayout)
         NavigationUI.setupWithNavController(navigationView, navController)
-    }
-
-    private fun configureToolbar()
-    {
-        /*toolbar.setNavigationIcon(R.drawable.ic_baseline_menu_24)
-        setSupportActionBar(toolbar)
-        drawerToggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, 0, 0)
-        drawerToggle.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24)
-        drawerLayout.addDrawerListener(drawerToggle)*/
     }
 
     private fun connectToDevice(device: UsbDevice?) {
@@ -178,10 +175,6 @@ class MainActivity : AppCompatActivity(), UsbPermissionBroadcastReceiver.OnPermi
         }
     }
 
-    private val navigationItemSelectedListener = NavigationView.OnNavigationItemSelectedListener {
-        false
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val navController = (supportFragmentManager.findFragmentById(R.id.fragmentContainer) as NavHostFragment).navController
         return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
@@ -189,10 +182,13 @@ class MainActivity : AppCompatActivity(), UsbPermissionBroadcastReceiver.OnPermi
 
     override fun onConnected() {
         Toast.makeText(this, getString(R.string.message_connection_successful), Toast.LENGTH_SHORT).show()
-        workoutDataViewViewModel.startDataCollection()
     }
 
     override fun onDisconnected() {
         Toast.makeText(this, getString(R.string.error_device_disconnected), Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDataReceived(data: TimerData) {
+        workoutDataViewViewModel.pushNewTimerData(data)
     }
 }

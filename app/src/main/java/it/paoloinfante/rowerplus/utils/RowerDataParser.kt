@@ -22,7 +22,7 @@ class RowerDataParser(private val ROWS_PER_CALORIE: Float, private val METERS_PE
 
         val timeElapsedDelta = elapsedTimeMs - previousElapsedMillis
 
-        if (existingRowerStatus.rowsCount > 0 && timeElapsedDelta > 0) {
+        if (existingRowerStatus.rowsCount > 0 && timeElapsedDelta > 1) {
             existingRowerStatus.currentRPM = 60000f / timeElapsedDelta
             existingRowerStatus.currentSecsFor500M =
                 timeElapsedDelta.toFloat() / 1000 * (500f / METERS_PER_ROW)
