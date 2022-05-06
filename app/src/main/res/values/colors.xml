@@ -13,6 +13,7 @@
     <color name="moreBlackLucidColor">#10000000</color>
     <color name="cream">#FFF5DA</color>
     <color name="carbon">#161616</color>
+    <color name="redTranslucent">#40D32F2F</color>
 
     <array name="chartSeriesColors">
         <item>#455A64</item>

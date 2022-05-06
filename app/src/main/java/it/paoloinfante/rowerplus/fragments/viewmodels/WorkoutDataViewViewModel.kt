@@ -39,8 +39,6 @@ class WorkoutDataViewViewModel @Inject constructor(
     private val _timerData = MutableStateFlow(TimerData(0, 0f, 0f, 0, 0f, 0f))
     val timerData: StateFlow<TimerData> = _timerData
 
-    private var lastWorkoutStatus: WorkoutStatus = WorkoutStatus(null, 0, 0, 0f, 0f, 0, 0f, 0f)
-
     fun pushNewTimerData(data: TimerData) {
         _timerData.value = data
     }
@@ -63,5 +61,9 @@ class WorkoutDataViewViewModel @Inject constructor(
 
     fun getWorkout(id: Int): Flow<WorkoutWithStatuses?> {
         return workoutRepository.getWorkout(id)
+    }
+
+    fun getLastWorkoutStatus(): Flow<WorkoutStatus?> {
+        return workoutStatusRepository.getLastStatusForLastWorkout()
     }
 }
