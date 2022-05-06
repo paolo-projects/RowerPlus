@@ -14,7 +14,7 @@
     <string name="error_permission_error_message">Un errore si è verificato durante l\'acquisizione dei permessi</string>
     <string name="message_ok">OK</string>
     <string name="message_connection_successful">Connessione al dispositivo USB avvenuta con successo!</string>
-    <string name="error_device_disconnected">Dispositivo USB disconnesso! Riprovo tra qualche istante…</string>
+    <string name="error_device_disconnected">Dispositivo USB non connesso! Riprovo tra qualche istante…</string>
     <string name="all_workouts_actionmode_title">Modifica allenamenti</string>
     <string name="all_workouts_selection_format">%d selezionati</string>
     <string name="all_workouts_menu_delete_all">Elimina tutti</string>

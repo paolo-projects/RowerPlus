@@ -36,13 +36,6 @@ class WorkoutDataViewViewModel @Inject constructor(
         private const val TAG = "WorkoutDataViewViewModel"
     }
 
-    private val _timerData = MutableStateFlow(TimerData(0, 0f, 0f, 0, 0f, 0f))
-    val timerData: StateFlow<TimerData> = _timerData
-
-    fun pushNewTimerData(data: TimerData) {
-        _timerData.value = data
-    }
-
     fun getAllWorkoutsWithStatuses(): Flow<List<WorkoutWithStatuses>> {
         return workoutRepository.getAllWorkoutsWithStatuses()
     }

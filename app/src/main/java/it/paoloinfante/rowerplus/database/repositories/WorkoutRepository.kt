@@ -11,6 +11,10 @@ class WorkoutRepository @Inject constructor(private val workoutDao: WorkoutDao) 
         return workoutDao.getLastWorkoutId()
     }
 
+    suspend fun exists(id: Int): Boolean {
+        return workoutDao.exists(id)
+    }
+
     suspend fun insert(workout: Workout) {
         workoutDao.insertAll(workout)
     }

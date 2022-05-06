@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="rowing_timer_timeout_ms">5000</integer>
-    <integer name="connection_retry_timeout_ms">5000</integer>
+    <integer name="connection_retry_timeout_ms">10000</integer>
     <integer name="data_update_timer_interval_ms">100</integer>
     <integer name="serial_baud_rate">9600</integer>
     <item name="meters_per_row" type="dimen" format="float">8.0</item>

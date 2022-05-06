@@ -22,7 +22,7 @@
     <string name="error_permission_error_message">An error occurred while gathering USB device permissions</string>
     <string name="message_ok">OK</string>
     <string name="message_connection_successful">Connection to USB device successful!</string>
-    <string name="error_device_disconnected">USB device disconnected! Retrying in a little while…</string>
+    <string name="error_device_disconnected">USB device not connected! Retrying in a little while…</string>
     <string name="all_workouts_actionmode_title">Edit workouts</string>
     <string name="all_workouts_selection_format">%d selected</string>
     <string name="all_workouts_menu_delete_all">Delete All</string>

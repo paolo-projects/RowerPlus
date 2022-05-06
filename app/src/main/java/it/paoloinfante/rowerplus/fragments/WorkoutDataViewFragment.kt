@@ -11,6 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import it.paoloinfante.rowerplus.R
 import it.paoloinfante.rowerplus.fragments.viewmodels.WorkoutDataViewViewModel
 import it.paoloinfante.rowerplus.models.TimerData
+import it.paoloinfante.rowerplus.viewmodels.UsbConnectionViewModel
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -42,7 +43,7 @@ class WorkoutDataViewFragment(
     private lateinit var view6TextView: TextView
     private lateinit var view6TitleTextView: TextView
 
-    private val workoutDataViewModel by activityViewModels<WorkoutDataViewViewModel>()
+    private val usbConnectionViewModel by activityViewModels<UsbConnectionViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,8 +67,8 @@ class WorkoutDataViewFragment(
         setTitles()
 
         lifecycleScope.launch {
-            workoutDataViewModel.timerData.collect {
-                onNewStatus(it)
+            usbConnectionViewModel.timerDataEvents.collect {
+                onNewStatus(it.timerData)
             }
         }
     }
@@ -86,10 +87,6 @@ class WorkoutDataViewFragment(
         //TODO: Could as well remove redundancy here
 
         Log.d(TAG, "workoutLiveDataUpdate: $workoutStatus")
-
-        if (workoutStatus == null) {
-            return
-        }
 
         when (dataView) {
             dataViews[0] -> {

@@ -10,8 +10,11 @@ interface WorkoutDao {
     @Query("SELECT * FROM workout")
     suspend fun getAll(): List<Workout>
 
+    @Query("SELECT EXISTS(SELECT * FROM workout WHERE id = :id)")
+    suspend fun exists(id: Int): Boolean
+
     @Transaction
-    @Query("SELECT * FROM workout")
+    @Query("SELECT * FROM workout ORDER BY id DESC")
     fun getWorkoutsWithStatuses(): Flow<List<WorkoutWithStatuses>>
 
     @Query("SELECT id FROM workout ORDER BY id DESC LIMIT 1")

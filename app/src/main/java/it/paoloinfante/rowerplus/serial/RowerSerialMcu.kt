@@ -22,8 +22,8 @@ class RowerSerialMcu(
     private val dataBuffer = ArrayList<Byte>()
 
     interface RowerSerialDataListener {
-        fun onDataReceived(pull: RowerPull)
-        fun onError(e: Exception?)
+        fun onSerialDataReceived(pull: RowerPull)
+        fun onSerialReadError(e: Exception?)
     }
 
     private var serialInputOutputManager: SerialInputOutputManager
@@ -81,7 +81,7 @@ class RowerSerialMcu(
             val avgNum = dataBA.getUIntAt(2).swapEndianness()
             val avgCount = dataBA[6].toInt() and 0xFF
 
-            rowerSerialDataListener.onDataReceived(
+            rowerSerialDataListener.onSerialDataReceived(
                 RowerPull(
                     Date(),
                     avgNum.toFloat() / avgCount,
@@ -93,13 +93,13 @@ class RowerSerialMcu(
         }
     }
 
-    fun ByteArray.getUIntAt(idx: Int) =
+    private fun ByteArray.getUIntAt(idx: Int) =
         ((this[idx].toUInt() and 0xFFu) shl 24) or
                 ((this[idx + 1].toUInt() and 0xFFu) shl 16) or
                 ((this[idx + 2].toUInt() and 0xFFu) shl 8) or
                 (this[idx + 3].toUInt() and 0xFFu)
 
-    fun UInt.swapEndianness() =
+    private fun UInt.swapEndianness() =
         ((this and 0xFF000000u) shr 24) or
                 ((this and 0x00FF0000u) shr 8) or
                 ((this and 0x0000FF00u) shl 8) or
@@ -107,6 +107,7 @@ class RowerSerialMcu(
 
     override fun onRunError(e: Exception?) {
         e?.printStackTrace()
-        rowerSerialDataListener.onError(e)
+        stop()
+        rowerSerialDataListener.onSerialReadError(e)
     }
 }
