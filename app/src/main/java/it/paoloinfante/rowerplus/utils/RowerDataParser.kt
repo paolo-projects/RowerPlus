@@ -2,7 +2,6 @@ package it.paoloinfante.rowerplus.utils
 
 import it.paoloinfante.rowerplus.database.models.WorkoutStatus
 import it.paoloinfante.rowerplus.models.RowerPull
-import java.util.*
 import kotlin.math.floor
 
 class RowerDataParser(private val ROWS_PER_CALORIE: Float, private val METERS_PER_ROW: Float) {
@@ -10,14 +9,17 @@ class RowerDataParser(private val ROWS_PER_CALORIE: Float, private val METERS_PE
 
     /**
      * Parse data received from the rowing machine.
-     * TODO: This can be further improved by taking into account the parameters sent by the MCU (avg time + count of switch triggers in the pull phase)
      */
-    fun parseData(data: RowerPull, existingRowerStatus: WorkoutStatus, elapsedTimeStopwatch: Stopwatch) {
+    fun parseData(
+        data: RowerPull,
+        existingRowerStatus: WorkoutStatus,
+        elapsedTimeStopwatch: Stopwatch
+    ) {
         val elapsedTimeMs = elapsedTimeStopwatch.elapsedMilliseconds
 
         existingRowerStatus.timeElapsed = floor(elapsedTimeMs / 1000f).toInt()
-        existingRowerStatus.calories += 1f / ROWS_PER_CALORIE
-        existingRowerStatus.distance += METERS_PER_ROW
+        existingRowerStatus.calories += getScaledCalories(data)
+        existingRowerStatus.distance += getScaledDistance(data)
         existingRowerStatus.rowsCount++
 
         val timeElapsedDelta = elapsedTimeMs - previousElapsedMillis
@@ -32,5 +34,13 @@ class RowerDataParser(private val ROWS_PER_CALORIE: Float, private val METERS_PE
         }
 
         previousElapsedMillis = elapsedTimeMs
+    }
+
+    private fun getScaledDistance(data: RowerPull): Float {
+        return data.distance
+    }
+
+    private fun getScaledCalories(data: RowerPull): Float {
+        return data.energy
     }
 }

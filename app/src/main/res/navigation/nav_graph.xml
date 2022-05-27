@@ -23,9 +23,30 @@
         android:id="@+id/singleWorkoutFragment"
         android:name="it.paoloinfante.rowerplus.fragments.SingleWorkoutFragment"
         android:label="@string/navigation_workout_label"
-        tools:layout="@layout/fragment_single_workout" >
+        tools:layout="@layout/fragment_single_workout">
         <argument
             android:name="workoutId"
             app:argType="integer" />
     </fragment>
+    <fragment
+        android:id="@+id/allSchemesFragment"
+        android:name="it.paoloinfante.rowerplus.navigation.AllSchemesFragment"
+        android:label="@string/navigation_schemes_label"
+        tools:layout="@layout/fragment_all_schemes">
+        <action
+            android:id="@+id/action_allSchemesFragment_to_newSchemeFragment"
+            app:destination="@id/newSchemeFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/preferencesFragment"
+        android:name="it.paoloinfante.rowerplus.fragments.SettingsFragment"
+        android:label="@string/navigation_preferences_label"
+        tools:layout="@layout/fragment_new_scheme" />
+
+    <fragment
+        android:id="@+id/newSchemeFragment"
+        android:name="it.paoloinfante.rowerplus.fragments.NewSchemeFragment"
+        android:label="@string/navigation_new_scheme_label"
+        tools:layout="@layout/fragment_new_scheme" />
 </navigation>

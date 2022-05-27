@@ -14,6 +14,8 @@
     <color name="cream">#FFF5DA</color>
     <color name="carbon">#161616</color>
     <color name="redTranslucent">#20D32F2F</color>
+    <color name="lucidColor2">#08FFFFFF</color>
+    <color name="blackLucidColor2">#08000000</color>
 
     <array name="chartSeriesColors">
         <item>#455A64</item>
@@ -22,5 +24,15 @@
         <item>#512DA8</item>
         <item>#009688</item>
         <item>#FFC107</item>
+    </array>
+
+    <array name="hrZonesColors">
+        <item>#f0f921</item>
+        <item>#fdb42f</item>
+        <item>#ed7953</item>
+        <item>#cc4778</item>
+        <item>#9c179e</item>
+        <item>#5c01a6</item>
+        <item>#0d0887</item>
     </array>
 </resources>

@@ -14,7 +14,7 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="textColor">@color/white</item>
-        <item name="toolbarBackground">@color/lucidColor</item>
+        <item name="toolbarBackground">@color/lucidColor2</item>
         <item name="selectionOverlayColor">@color/moreLucidColor</item>
         <item name="listItemBackground">@color/lucidColor</item>
 

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+    <SwitchPreferenceCompat
+        app:key="@string/preferenceFloatingWindow"
+        app:title="@string/preference_floating_window_title" />
+    <EditTextPreference
+        app:key="@string/preferenceUserAge"
+        app:title="@string/preference_user_age_title" />
+</PreferenceScreen>

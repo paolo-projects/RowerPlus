@@ -55,6 +55,39 @@
             android:layout_width="match_parent"
             android:layout_height="400dp"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginBottom="@dimen/workout_performance_label_margin_bottom"/>
+            android:layout_marginBottom="@dimen/workout_performance_label_margin_bottom" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/workout_performance_bpm_label"
+            android:textSize="@dimen/workout_performance_label_size"
+            android:layout_marginBottom="@dimen/workout_performance_label_margin_bottom" />
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/bpmChart"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginBottom="@dimen/workout_performance_label_margin_bottom" />
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/hrZonesLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/workout_performance_hr_zones_label"
+            android:textSize="@dimen/workout_performance_label_size"
+            android:layout_marginBottom="@dimen/workout_performance_label_margin_bottom" />
+
+        <com.github.mikephil.charting.charts.PieChart
+            android:visibility="gone"
+            android:id="@+id/hrZonesChart"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginBottom="@dimen/workout_performance_label_margin_bottom" />
     </LinearLayout>
 </ScrollView>

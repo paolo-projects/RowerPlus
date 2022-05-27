@@ -8,7 +8,6 @@ data class WorkoutWithStatuses(
     @Relation(
         parentColumn = "id",
         entityColumn = "workoutId",
-
     )
     val workoutStatuses: List<WorkoutStatus>
 )

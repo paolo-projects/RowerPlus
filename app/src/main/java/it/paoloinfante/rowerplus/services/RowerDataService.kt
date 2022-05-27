@@ -17,17 +17,17 @@ import it.paoloinfante.rowerplus.R
 import it.paoloinfante.rowerplus.database.models.Workout
 import it.paoloinfante.rowerplus.database.models.WorkoutStatus
 import it.paoloinfante.rowerplus.database.repositories.WorkoutRepository
-import it.paoloinfante.rowerplus.database.repositories.WorkoutStatusRepository
 import it.paoloinfante.rowerplus.models.RowerPull
 import it.paoloinfante.rowerplus.models.TimerData
 import it.paoloinfante.rowerplus.models.events.UsbServiceConnectionStatusEvent
 import it.paoloinfante.rowerplus.models.events.UsbServicePermissionRequiredEvent
 import it.paoloinfante.rowerplus.models.events.UsbServiceTimerUpdateEvent
-import it.paoloinfante.rowerplus.receiver.RowerConnectionStatusBroadcastReceiver
 import it.paoloinfante.rowerplus.receiver.RowerDataBroadcastReceiver
 import it.paoloinfante.rowerplus.repositories.UsbServiceRepository
-import it.paoloinfante.rowerplus.serial.RowerSerialMcu
-import it.paoloinfante.rowerplus.serial.UsbConnectionManager
+import it.paoloinfante.rowerplus.serial.UsbSerialConnectionManager
+import it.paoloinfante.rowerplus.serial.UsbSerialProtocol
+import it.paoloinfante.rowerplus.usb.ErgometerDeviceListener
+import it.paoloinfante.rowerplus.usb.UsbDeviceProtocol
 import it.paoloinfante.rowerplus.utils.RowerDataParser
 import it.paoloinfante.rowerplus.utils.Stopwatch
 import kotlinx.coroutines.*
@@ -37,8 +37,8 @@ import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class RowerDataService : Service(), RowerSerialMcu.RowerSerialDataListener,
-    UsbConnectionManager.Listener {
+class RowerDataService : Service(), ErgometerDeviceListener,
+    UsbSerialConnectionManager.Listener {
     companion object {
         private const val TAG = "RowerDataService"
     }
@@ -47,15 +47,20 @@ class RowerDataService : Service(), RowerSerialMcu.RowerSerialDataListener,
     private var METERS_PER_ROW: Float = 0f
 
     @Inject
-    lateinit var workoutRepository: WorkoutRepository
-    @Inject
-    lateinit var workoutStatusRepository: WorkoutStatusRepository
-    @Inject
     lateinit var usbServiceRepository: UsbServiceRepository
 
-    private val usbConnectionManager = UsbConnectionManager(this, this)
+    @Inject
+    lateinit var workoutRepository: WorkoutRepository
+
+    private var deviceVid: Int = 0
+    private var devicePid: Int = 0
+
+    //private val usbConnectionManager = UsbSerialConnectionManager(this, this)
+    private val usbHidConnectionManager = UsbSerialConnectionManager(this, this)
     private lateinit var rowerDataParser: RowerDataParser
-    private var rowerSerialMcu: RowerSerialMcu? = null
+
+    //private var rowerSerialMcu: RowerSerialMcu? = null
+    private var usbProtocol: UsbSerialProtocol? = null
     private var workoutStatus: WorkoutStatus? = null
 
     private val elapsedTimeStopwatch = Stopwatch()
@@ -70,6 +75,9 @@ class RowerDataService : Service(), RowerSerialMcu.RowerSerialDataListener,
     override fun onCreate() {
         super.onCreate()
 
+        deviceVid = resources.getInteger(R.integer.custom_usb_vid)
+        devicePid = resources.getInteger(R.integer.custom_usb_pid)
+
         val rowsPerCaloriesTyped = TypedValue()
         resources.getValue(R.dimen.rows_per_calorie, rowsPerCaloriesTyped, true)
         ROWS_PER_CALORIE = rowsPerCaloriesTyped.float
@@ -82,12 +90,14 @@ class RowerDataService : Service(), RowerSerialMcu.RowerSerialDataListener,
     }
 
     override fun onBind(p0: Intent?): IBinder {
+        workoutStatus = WorkoutStatus(null, 0, 0, 0f, 0f, 0, 0f, 0f, null)
+
         return localBinder
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
         timerUpdater?.cancel()
-        rowerSerialMcu?.stop()
+        usbProtocol?.stop()
         connectionRetryHandler?.removeCallbacksAndMessages(null)
 
         return false
@@ -97,9 +107,9 @@ class RowerDataService : Service(), RowerSerialMcu.RowerSerialDataListener,
         ioScope.cancel()
     }
 
-    override fun onSerialDataReceived(pull: RowerPull) {
+    override fun onDeviceDataReceived(pull: RowerPull) {
         Log.d(TAG, "onSerialDataReceived: Received data from ergometer $pull")
-        
+
         elapsedTimeStopwatch.start()
         stopWatchPauseTask.removeCallbacks(pauseStopwatch)
         stopWatchPauseTask.postDelayed(
@@ -123,16 +133,11 @@ class RowerDataService : Service(), RowerSerialMcu.RowerSerialDataListener,
 
     private fun persistStatus(status: WorkoutStatus) {
         ioScope.launch {
-            if (!workoutRepository.exists(status.workoutId)) {
-                createNewWorkout()
-                status.workoutId = workoutRepository.getLastWorkoutId()!!
-            }
-
-            workoutStatusRepository.pushStatus(status)
+            usbServiceRepository.emitWorkoutStatus(status)
         }
     }
 
-    override fun onSerialReadError(e: Exception?) {
+    override fun onDeviceReadError(e: Exception?) {
         sendConnectionStatus(false)
 
         retryConnection()
@@ -156,25 +161,39 @@ class RowerDataService : Service(), RowerSerialMcu.RowerSerialDataListener,
                     )
                 )
             }
+            LocalBroadcastManager.getInstance(this@RowerDataService)
+                .sendBroadcast(Intent(RowerDataBroadcastReceiver.INTENT_KEY).apply {
+                    putExtra(
+                        RowerDataBroadcastReceiver.EXTRA_TIMER_DATA,
+                        TimerData(
+                            elapsedTimeStopwatch.elapsedSeconds.toInt(),
+                            workoutStatus!!.calories,
+                            workoutStatus!!.distance,
+                            workoutStatus!!.rowsCount,
+                            workoutStatus!!.currentRPM,
+                            workoutStatus!!.currentSecsFor500M
+                        )
+                    )
+                })
         }
     }
 
     inner class LocalBinder : Binder() {
         fun connect(usbDevice: UsbDevice?) {
-            usbConnectionManager.connect(usbDevice)
+            usbHidConnectionManager.connect(usbDevice)
         }
     }
 
     private suspend fun createNewWorkout() {
         val nowTime = Date()
         val wName = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ITALY).format(nowTime)
-        workoutRepository.insert(Workout(null, wName, nowTime))
+        workoutRepository.insertWorkout(Workout(null, wName, nowTime))
     }
 
     private fun retryConnection() {
         connectionRetryHandler = Handler(Looper.getMainLooper()).also {
             it.postDelayed({
-                usbConnectionManager.connect(null)
+                usbHidConnectionManager.connect(null)
             }, resources.getInteger(R.integer.connection_retry_timeout_ms).toLong())
         }
     }
@@ -187,36 +206,33 @@ class RowerDataService : Service(), RowerSerialMcu.RowerSerialDataListener,
 
     override fun onUsbConnected(port: UsbSerialPort, connection: UsbDeviceConnection) {
         CoroutineScope(Dispatchers.IO + Job()).launch {
-            if (rowerSerialMcu != null) {
-                rowerSerialMcu!!.stop()
+            if (usbProtocol != null) {
+                usbProtocol!!.stop()
             }
 
-            if (workoutStatus == null) {
+            usbProtocol =
+                UsbSerialProtocol(this@RowerDataService, port, connection, this@RowerDataService)
+            try {
+                usbProtocol!!.start()
                 createNewWorkout()
-                val workoutId = workoutRepository.getLastWorkoutId()
-
-                if (workoutId != null) {
-                    workoutStatus = WorkoutStatus(null, workoutId)
-                } else {
-                    throw Exception("No workout found to collect data")
-                }
+                sendConnectionStatus(true)
+            } catch (exc: UsbDeviceProtocol.UsbProtocolException) {
+                onUsbConnectionError(exc)
             }
-
-            sendConnectionStatus(true)
-
+            /*
             rowerSerialMcu = RowerSerialMcu(
                 applicationContext,
                 port,
                 connection,
                 this@RowerDataService
             )
-            rowerSerialMcu!!.start()
+            rowerSerialMcu!!.start()*/
         }
     }
 
     override fun onUsbConnectionError(e: Exception?) {
         e?.printStackTrace()
-        rowerSerialMcu?.stop()
+        usbProtocol?.stop()
         sendConnectionStatus(false)
         retryConnection()
     }

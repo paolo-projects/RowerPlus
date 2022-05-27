@@ -5,8 +5,13 @@
     <string name="current_rpm_format" translatable="false">%.1f</string>
     <string name="time_for_500m_format" translatable="false">%02d:%02d</string>
     <string name="total_rows_format" translatable="false">%d</string>
+    <string name="bpm_format" translatable="false">%d</string>
 
     <string name="database_name" translatable="false">rower_plus_db</string>
+    <string name="preferences_key" translatable="false">it.paoloinfante.rowerplus.SharedPreferences</string>
+
+    <string name="preferenceFloatingWindow" translatable="false">app_preference_floating_window</string>
+    <string name="preferenceUserAge" translatable="false">app_preference_user_age</string>
 
     <string name="app_name">RowerPlus</string>
     <string name="training_info_timer_default">-</string>
@@ -33,11 +38,12 @@
     <string name="single_workout_menu_delete">Delete</string>
     <string name="workout_delete_confirmation_message">Do you really want to delete this workout?</string>
     <string name="performance_distance_chart_series">Distance (m)</string>
-    <string name="performance_rpm_chart_series">RPM</string>
+    <string name="performance_rpm_chart_series">SPM</string>
     <string name="workout_performance_distance_label">Distance</string>
-    <string name="workout_performance_rpm_label">Rows per Minute</string>
+    <string name="workout_performance_rpm_label">Strokes per Minute</string>
     <string name="workout_performance_calories_label">Calories</string>
     <string name="performance_calories_chart_series">Calories (kcal)</string>
+    <string name="performance_bpm_chart_series">BPM</string>
     <string name="single_workout_menu_export">Export to Excel file</string>
     <string name="navigation_workouts_label">Workouts</string>
     <string name="navigation_workout_label">Workout</string>
@@ -47,13 +53,38 @@
     <string name="alert_overlay_permission_message">Enable \'Display over other apps\' from System Settings.</string>
     <string name="alert_overlay_permission_open_settings">Open Settings</string>
     <string name="floating_window_close_button_content_description">Close</string>
+    <string name="menu_schemes_title">Schemes</string>
+    <string name="navigation_schemes_label">Schemes</string>
+    <string name="schemes_menu_add">Create</string>
+    <string name="new_scheme_menu_save">Save</string>
+    <string name="schemes_menu_load_file">Load from file</string>
+    <string name="error_configuration_file_not_supported">The selected file is not compatible and could not be loaded</string>
+    <string name="rower_data_menu_load_file">Connect to Heart Rate sensor</string>
+    <string name="message_hr_connected">Heart rate sensor connected successfully</string>
+    <string name="message_hr_disconnected">Heart rate sensor disconnected</string>
+    <string name="workout_performance_bpm_label">BPM</string>
+    <string name="ble_dialog_select_device">Select bluetooth device</string>
+    <string name="navigation_preferences_label">Settings</string>
+    <string name="navigation_new_scheme_label">New scheme</string>
+    <string name="menu_preferences_title">Settings</string>
+    <string name="preference_floating_window_title">Enable floating window when app is in the background</string>
+    <string name="preference_user_age_title">Age (will be used for heart rate zones calculation)</string>
+    <string name="workout_performance_hr_zones_label">Heart Rate Zones</string>
+    <string name="hr_zones_low_intensity">Low intensity</string>
+    <string name="hr_zones_zone_1">Zone 1</string>
+    <string name="hr_zones_zone_2">Zone 2</string>
+    <string name="hr_zones_zone_3">Zone 3</string>
+    <string name="hr_zones_zone_4">Zone 4</string>
+    <string name="hr_zones_zone_5">Zone 5</string>
+    <string name="hr_zones_critical">Critical</string>
 
     <string-array name="workout_variables">
         <item>Time</item>
         <item>Distance</item>
         <item>Calories</item>
-        <item>RPM</item>
+        <item>SPM</item>
         <item>Time/500m</item>
         <item>Total Rows</item>
+        <item>BPM</item>
     </string-array>
 </resources>

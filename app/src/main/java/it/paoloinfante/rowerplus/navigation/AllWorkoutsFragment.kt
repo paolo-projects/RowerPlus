@@ -8,7 +8,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavGraphNavigator
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
@@ -53,7 +52,7 @@ class AllWorkoutsFragment : Fragment(R.layout.fragment_all_workouts), AllWorkout
             "all_workouts_workout_selection",
             workoutsRecyclerView,
             ItemsKeyProvider(workoutsRecyclerAdapter),
-            ItemDetailsLookup(workoutsRecyclerView),
+            ItemDetailsLookup<AllWorkoutsRecyclerAdapter.ViewHolder>(workoutsRecyclerView),
             StorageStrategy.createLongStorage()
         ).withSelectionPredicate(SelectionPredicates.createSelectAnything())
             .build()

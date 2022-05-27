@@ -7,16 +7,16 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.SelectionTracker
-import androidx.recyclerview.widget.RecyclerView
 import it.paoloinfante.rowerplus.R
 import it.paoloinfante.rowerplus.database.models.WorkoutWithStatuses
+import it.paoloinfante.rowerplus.utils.DateDisplay
 import kotlin.math.floor
 
 class AllWorkoutsRecyclerAdapter(
     private val mContext: Context,
     workouts: List<WorkoutWithStatuses>,
     private val actionListener: Actions
-) : RecyclerView.Adapter<AllWorkoutsRecyclerAdapter.ViewHolder>() {
+) : ItemDetailsRecyclerAdapter<AllWorkoutsRecyclerAdapter.ViewHolder>() {
     val workouts = ArrayList<WorkoutWithStatuses>()
     var tracker: SelectionTracker<Long>? = null
     private var selectedColor: Int = 0
@@ -65,8 +65,17 @@ class AllWorkoutsRecyclerAdapter(
         notifyItemRangeInserted(0, this.workouts.size)
     }
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun getItem() = object : ItemDetailsLookup.ItemDetails<Long>() {
+    override fun getItemKey(position: Int): Long? {
+        return workouts[position].workout.id?.toLong()
+    }
+
+    override fun getItemKeyPosition(key: Long): Int {
+        return workouts.indexOfFirst { it.workout.id?.toLong() == key }
+    }
+
+    inner class ViewHolder(itemView: View) :
+        ItemDetailsRecyclerAdapter.ItemDetailsViewHolder(itemView) {
+        override fun getItem() = object : ItemDetailsLookup.ItemDetails<Long>() {
             override fun getPosition(): Int {
                 return adapterPosition
             }
@@ -77,7 +86,7 @@ class AllWorkoutsRecyclerAdapter(
         }
 
         fun bind(item: WorkoutWithStatuses) {
-            workoutName.text = item.workout.name
+            workoutName.text = DateDisplay.dateToTimeAgo(mContext, item.workout.time).lowercase()
 
             if(item.workoutStatuses.isNotEmpty()) {
                 val time = item.workoutStatuses.maxOf { it.timeElapsed }

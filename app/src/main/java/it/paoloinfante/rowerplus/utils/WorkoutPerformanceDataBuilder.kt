@@ -18,4 +18,9 @@ class WorkoutPerformanceDataBuilder(private val workoutData: List<WorkoutStatus>
         workoutData.map {
             Entry(it.timeElapsed.toFloat(), it.calories)
         }
+
+    fun buildBPMChart(): List<Entry> =
+        workoutData.map {
+            Entry(it.timeElapsed.toFloat(), it.heartRateBpm ?: 0f)
+        }
 }

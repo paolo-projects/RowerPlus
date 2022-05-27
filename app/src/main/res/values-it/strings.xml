@@ -30,6 +30,7 @@
     <string name="workout_performance_rpm_label">Vogate per Minuto</string>
     <string name="workout_performance_calories_label">Calorie</string>
     <string name="performance_calories_chart_series">Calorie (kcal)</string>
+    <string name="performance_bpm_chart_series">BPM</string>
     <string name="single_workout_menu_export">Esporta a file Excel</string>
     <string name="navigation_workouts_label">Allenamenti</string>
     <string name="navigation_workout_label">Allenamento</string>
@@ -39,7 +40,30 @@
     <string name="alert_overlay_permission_message">Abilita \'Mostra su altre app\' dalle impostazioni di sistema.</string>
     <string name="alert_overlay_permission_open_settings">Apri impostazioni</string>
     <string name="floating_window_close_button_content_description">Chiudi</string>
-
+    <string name="menu_schemes_title">Schemi</string>
+    <string name="navigation_schemes_label">Schemi</string>
+    <string name="schemes_menu_add">Crea nuovo</string>
+    <string name="new_scheme_menu_save">Salva</string>
+    <string name="schemes_menu_load_file">Carica da file</string>
+    <string name="error_configuration_file_not_supported">Il file selezionato non è compatibile e non è stato caricato</string>
+    <string name="rower_data_menu_load_file">Connetti un sensore di Battito Cardiaco</string>
+    <string name="message_hr_connected">Sensore di battito cardiaco collegato</string>
+    <string name="message_hr_disconnected">Sensore di battito cardiaco disconnesso</string>
+    <string name="workout_performance_bpm_label">BPM</string>
+    <string name="ble_dialog_select_device">Seleziona il dispositivo bluetooth</string>
+    <string name="navigation_preferences_label">Impostazioni</string>
+    <string name="navigation_new_scheme_label">Nuovo schema</string>
+    <string name="menu_preferences_title">Impostazioni</string>
+    <string name="preference_floating_window_title">Abilita il display in miniatura quando l\'app è in background</string>
+    <string name="preference_user_age_title">Età (sarà usata per il calcolo delle zone di battito cardiaco)</string>
+    <string name="workout_performance_hr_zones_label">Zone di battito cardiaco</string>
+    <string name="hr_zones_low_intensity">Bassa intensità</string>
+    <string name="hr_zones_zone_1">Zona 1</string>
+    <string name="hr_zones_zone_2">Zona 2</string>
+    <string name="hr_zones_zone_3">Zona 3</string>
+    <string name="hr_zones_zone_4">Zona 4</string>
+    <string name="hr_zones_zone_5">Zona 5</string>
+    <string name="hr_zones_critical">Critico</string>
 
     <string-array name="workout_variables">
         <item>Tempo</item>
@@ -48,5 +72,6 @@
         <item>VPM</item>
         <item>Tempo/500m</item>
         <item>Vogate Totali</item>
+        <item>BPM</item>
     </string-array>
 </resources>

@@ -9,5 +9,13 @@
             android:id="@+id/allWorkoutsFragment"
             android:title="@string/menu_workouts_title"
             android:icon="@drawable/ic_baseline_list_24" />
+        <item
+            android:id="@+id/allSchemesFragment"
+            android:title="@string/menu_schemes_title"
+            android:icon="@drawable/ic_baseline_file_copy_24" />
+        <item
+            android:id="@+id/preferencesFragment"
+            android:title="@string/menu_preferences_title"
+            android:icon="@drawable/ic_baseline_settings_24" />
     </group>
 </menu>

@@ -1,24 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
     android:background="@android:color/transparent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
-
-    <TextView
-        android:id="@+id/mainTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/trainingInfoMargin"
-        android:text="@string/training_info_timer_default"
-        android:textSize="@dimen/primary_workout_text_size"
-        app:layout_constraintBottom_toTopOf="@id/secondaryDataContainer"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/trainingInfoScreenDescription" />
 
     <TextView
         android:id="@+id/trainingInfoScreenDescription"
@@ -26,24 +14,44 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/trainingInfoMargin"
         android:textSize="@dimen/primary_workout_text_title_size"
+        android:layout_gravity="center_horizontal"
+        android:drawablePadding="8dp"
+        app:layout_constraintBottom_toTopOf="@id/mainTextView"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/mainTextView"/>
+        app:drawableEndCompat="@drawable/ic_baseline_power_off_24" />
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/mainTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/trainingInfoMargin"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/training_info_timer_default"
+        android:textSize="@dimen/primary_workout_text_size"
+        app:layout_constraintBottom_toTopOf="@id/secondaryDataContainer"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/trainingInfoScreenDescription" />
+
+    <GridLayout
         android:id="@+id/secondaryDataContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:baselineAligned="false"
+        android:columnCount="3"
         android:orientation="horizontal"
+        android:rowCount="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mainTextView">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_columnWeight="1"
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
@@ -65,7 +73,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_columnWeight="1"
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
@@ -87,7 +95,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_columnWeight="1"
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
@@ -109,7 +117,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_columnWeight="1"
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
@@ -131,7 +139,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_columnWeight="1"
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
@@ -149,6 +157,28 @@
                 android:gravity="center"
                 android:textSize="@dimen/secondary_workout_text_size" />
         </LinearLayout>
-    </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/workoutDataTitle7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="@dimen/secondary_workout_text_title_size" />
+
+            <TextView
+                android:id="@+id/workoutData7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="@dimen/secondary_workout_text_size" />
+        </LinearLayout>
+    </GridLayout>
+
+</LinearLayout>

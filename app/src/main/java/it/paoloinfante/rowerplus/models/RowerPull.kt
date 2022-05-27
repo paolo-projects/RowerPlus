@@ -4,6 +4,7 @@ import java.util.*
 
 data class RowerPull (
     var time: Date,
-    var avgMagTimeMs: Float,
-    var avgMagTimesCount: Int
+    var energy: Float,
+    var power: Float,
+    var distance: Float
 )

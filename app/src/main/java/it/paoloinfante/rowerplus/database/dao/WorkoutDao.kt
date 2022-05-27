@@ -23,6 +23,7 @@ interface WorkoutDao {
     @Query("SELECT * FROM workout WHERE id = :id")
     suspend fun findById(id: Int): Workout
 
+    @Transaction
     @Query("SELECT * FROM workout WHERE id = :id")
     fun getWorkout(id: Int): Flow<WorkoutWithStatuses?>
 

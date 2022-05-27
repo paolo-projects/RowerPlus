@@ -9,9 +9,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import it.paoloinfante.rowerplus.R
-import it.paoloinfante.rowerplus.fragments.viewmodels.WorkoutDataViewViewModel
 import it.paoloinfante.rowerplus.models.TimerData
+import it.paoloinfante.rowerplus.viewmodels.BleViewModel
 import it.paoloinfante.rowerplus.viewmodels.UsbConnectionViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -43,7 +44,11 @@ class WorkoutDataViewFragment(
     private lateinit var view6TextView: TextView
     private lateinit var view6TitleTextView: TextView
 
+    private lateinit var view7TextView: TextView
+    private lateinit var view7TitleTextView: TextView
+
     private val usbConnectionViewModel by activityViewModels<UsbConnectionViewModel>()
+    private val bleViewModel by activityViewModels<BleViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -60,6 +65,8 @@ class WorkoutDataViewFragment(
         view5TitleTextView = view.findViewById(R.id.workoutDataTitle5)
         view6TextView = view.findViewById(R.id.workoutData6)
         view6TitleTextView = view.findViewById(R.id.workoutDataTitle6)
+        view7TextView = view.findViewById(R.id.workoutData7)
+        view7TitleTextView = view.findViewById(R.id.workoutDataTitle7)
 
         dataViews = requireContext().resources.getStringArray(R.array.workout_variables)
         remainingDataViews = dataViews.filter { it != dataView }.toTypedArray()
@@ -67,8 +74,33 @@ class WorkoutDataViewFragment(
         setTitles()
 
         lifecycleScope.launch {
-            usbConnectionViewModel.timerDataEvents.collect {
-                onNewStatus(it.timerData)
+            async {
+                usbConnectionViewModel.timerDataEvents.collect {
+                    onNewStatus(it.timerData)
+                }
+            }
+            async {
+                usbConnectionViewModel.connectionStatusEvents.collect {
+                    descriptionTextView.setCompoundDrawablesWithIntrinsicBounds(
+                        0,
+                        0,
+                        if (it.connected) 0 else R.drawable.ic_baseline_power_off_24,
+                        0
+                    )
+
+                    mainTextView.isEnabled = it.connected
+                    view2TextView.isEnabled = it.connected
+                    view3TextView.isEnabled = it.connected
+                    view4TextView.isEnabled = it.connected
+                    view5TextView.isEnabled = it.connected
+                    view6TextView.isEnabled = it.connected
+                    view7TextView.isEnabled = it.connected
+                }
+            }
+            async {
+                bleViewModel.bleMeasurements.collect {
+                    onNewBpm(it)
+                }
             }
         }
     }
@@ -81,6 +113,15 @@ class WorkoutDataViewFragment(
         view4TitleTextView.text = remainingDataViews[2]
         view5TitleTextView.text = remainingDataViews[3]
         view6TitleTextView.text = remainingDataViews[4]
+        view7TitleTextView.text = remainingDataViews[5]
+    }
+
+    private fun onNewBpm(bpm: Int) {
+        if (dataView == dataViews[6]) {
+            mainTextView.text = getString(R.string.bpm_format, bpm)
+        } else {
+            view7TextView.text = getString(R.string.bpm_format, bpm)
+        }
     }
 
     private fun onNewStatus(workoutStatus: TimerData) {
@@ -207,6 +248,26 @@ class WorkoutDataViewFragment(
                         workoutStatus.currentSecsFor500M.toInt() % 60
                     )
                 mainTextView.text =
+                    getString(R.string.total_rows_format).format(workoutStatus.rowsCount)
+            }
+            dataViews[6] -> {
+                view2TextView.text =
+                    getString(R.string.timer_format).format(
+                        workoutStatus.timeElapsed / 60,
+                        workoutStatus.timeElapsed % 60
+                    )
+                view3TextView.text =
+                    getString(R.string.distance_format).format(workoutStatus.distance)
+                view4TextView.text =
+                    getString(R.string.calories_format).format(workoutStatus.calories)
+                view5TextView.text =
+                    getString(R.string.current_rpm_format).format(workoutStatus.currentRPM)
+                view6TextView.text =
+                    getString(R.string.time_for_500m_format).format(
+                        workoutStatus.currentSecsFor500M.toInt() / 60,
+                        workoutStatus.currentSecsFor500M.toInt() % 60
+                    )
+                view7TextView.text =
                     getString(R.string.total_rows_format).format(workoutStatus.rowsCount)
             }
         }

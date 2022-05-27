@@ -3,6 +3,7 @@ package it.paoloinfante.rowerplus.database.models
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
@@ -14,6 +15,9 @@ import androidx.room.PrimaryKey
             onDelete = CASCADE,
             onUpdate = CASCADE
         )
+    ],
+    indices = [
+        Index("workoutId")
     ]
 )
 data class WorkoutStatus(
@@ -24,5 +28,6 @@ data class WorkoutStatus(
     var distance: Float = 0f,// meters
     var rowsCount: Int = 0,
     var currentRPM: Float = 0f,
-    var currentSecsFor500M: Float = 0f
+    var currentSecsFor500M: Float = 0f,
+    var heartRateBpm: Float?
 )

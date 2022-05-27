@@ -22,16 +22,16 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.onNavDestinationSelected
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
-import it.paoloinfante.rowerplus.fragments.viewmodels.WorkoutDataViewViewModel
 import it.paoloinfante.rowerplus.receiver.FloatingWindowReceiver
-import it.paoloinfante.rowerplus.receiver.RowerConnectionStatusBroadcastReceiver
-import it.paoloinfante.rowerplus.receiver.RowerDataBroadcastReceiver
 import it.paoloinfante.rowerplus.receiver.UsbPermissionBroadcastReceiver
+import it.paoloinfante.rowerplus.repositories.PreferencesRepository
 import it.paoloinfante.rowerplus.services.FloatingWindowService
 import it.paoloinfante.rowerplus.services.RowerDataService
+import it.paoloinfante.rowerplus.viewmodels.BleViewModel
 import it.paoloinfante.rowerplus.viewmodels.UsbConnectionViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -50,6 +50,10 @@ class MainActivity : AppCompatActivity(), UsbPermissionBroadcastReceiver.OnPermi
     private lateinit var toolbar: Toolbar
 
     private val usbConnectionViewModel by viewModels<UsbConnectionViewModel>()
+    private val bleViewModel by viewModels<BleViewModel>()
+
+    @Inject
+    lateinit var preferencesRepository: PreferencesRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,17 +78,22 @@ class MainActivity : AppCompatActivity(), UsbPermissionBroadcastReceiver.OnPermi
     private fun listenToEvents() {
         lifecycleScope.launch {
             async {
-                usbConnectionViewModel.connectionStatusEvents.collect {
-                    if (it.connected) {
-                        onConnected()
-                    } else {
-                        onDisconnected()
-                    }
+                usbConnectionViewModel.permissionRequiredEvents.collect {
+                    onPermissionError(it.device)
                 }
             }
             async {
-                usbConnectionViewModel.permissionRequiredEvents.collect {
-                    onPermissionError(it.device)
+                bleViewModel.bleStatus.collect { connected ->
+                    Toast.makeText(
+                        this@MainActivity,
+                        if (connected) getString(R.string.message_hr_connected) else getString(R.string.message_hr_disconnected),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+            async {
+                bleViewModel.bleMeasurements.collect { bpm ->
+                    usbConnectionViewModel.updateHrData(bpm)
                 }
             }
         }
@@ -128,7 +137,9 @@ class MainActivity : AppCompatActivity(), UsbPermissionBroadcastReceiver.OnPermi
     override fun onStop() {
         super.onStop()
 
-        startFloatingWindow()
+        if (preferencesRepository.floatingWindowEnabled) {
+            startFloatingWindow()
+        }
     }
 
     override fun onDestroy() {
@@ -211,16 +222,6 @@ class MainActivity : AppCompatActivity(), UsbPermissionBroadcastReceiver.OnPermi
         val navController =
             (supportFragmentManager.findFragmentById(R.id.fragmentContainer) as NavHostFragment).navController
         return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
-    }
-
-    private fun onConnected() {
-        Toast.makeText(this, getString(R.string.message_connection_successful), Toast.LENGTH_SHORT)
-            .show()
-    }
-
-    private fun onDisconnected() {
-        Toast.makeText(this, getString(R.string.error_device_disconnected), Toast.LENGTH_SHORT)
-            .show()
     }
 
     private fun onPermissionError(device: UsbDevice) {

@@ -1,21 +1,26 @@
 package it.paoloinfante.rowerplus.database.repositories
 
 import it.paoloinfante.rowerplus.database.dao.WorkoutDao
+import it.paoloinfante.rowerplus.database.dao.WorkoutStatusDao
 import it.paoloinfante.rowerplus.database.models.Workout
+import it.paoloinfante.rowerplus.database.models.WorkoutStatus
 import it.paoloinfante.rowerplus.database.models.WorkoutWithStatuses
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class WorkoutRepository @Inject constructor(private val workoutDao: WorkoutDao) {
+class WorkoutRepository @Inject constructor(
+    private val workoutDao: WorkoutDao,
+    private val workoutStatusDao: WorkoutStatusDao
+) {
     suspend fun getLastWorkoutId(): Int? {
         return workoutDao.getLastWorkoutId()
     }
 
-    suspend fun exists(id: Int): Boolean {
+    suspend fun workoutExists(id: Int): Boolean {
         return workoutDao.exists(id)
     }
 
-    suspend fun insert(workout: Workout) {
+    suspend fun insertWorkout(workout: Workout) {
         workoutDao.insertAll(workout)
     }
 
@@ -27,15 +32,23 @@ class WorkoutRepository @Inject constructor(private val workoutDao: WorkoutDao) 
         return workoutDao.getWorkout(id)
     }
 
-    suspend fun deleteById(id: Int) {
+    suspend fun deleteWorkoutById(id: Int) {
         workoutDao.deleteById(id)
     }
 
-    suspend fun deleteByIds(ids: List<Int>) {
+    suspend fun deleteWorkoutsByIds(ids: List<Int>) {
         workoutDao.deleteByIds(ids)
     }
 
-    suspend fun deleteAll() {
+    suspend fun deleteAllWorkouts() {
         workoutDao.deleteAll()
+    }
+
+    fun getLastStatusForLastWorkout(): Flow<WorkoutStatus?> {
+        return workoutStatusDao.getLastStatusForLastWorkout()
+    }
+
+    suspend fun pushStatus(workoutStatus: WorkoutStatus) {
+        workoutStatusDao.addAll(workoutStatus)
     }
 }

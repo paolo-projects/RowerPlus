@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Node MCU ESP8266 (the embedded USB-To-UART Device) -->
-    <usb-device vendor-id="6790" product-id="29987" />
+    <usb-device
+        vendor-id="6790"
+        product-id="29987" />
+    <!-- Nucleo STM32F401 ST-Link debugger -->
+    <usb-device
+        vendor-id="1155"
+        product-id="14155" />
+    <!-- RowerPlus Custom HID Device VID 0x0483 PID 0xAEF6 -->
+    <usb-device
+        vendor-id="1155"
+        product-id="44790" />
 </resources>
