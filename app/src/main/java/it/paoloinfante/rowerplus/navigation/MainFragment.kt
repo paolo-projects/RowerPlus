@@ -63,7 +63,7 @@ class MainFragment : Fragment(R.layout.fragment_main_content), BleViewModel.Scan
         mainViewContainer = view.findViewById(R.id.mainViewContainer)
 
         viewPager = view.findViewById(R.id.pager)
-        fragmentAdapter = WorkoutDataViewsAdapter(requireContext(), childFragmentManager, lifecycle)
+        fragmentAdapter = WorkoutDataViewsAdapter(childFragmentManager, lifecycle)
         viewPager.adapter = fragmentAdapter
         viewPager.setPageTransformer(DepthPageTransformer())
 

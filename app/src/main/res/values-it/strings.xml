@@ -65,6 +65,14 @@
     <string name="hr_zones_zone_5">Zona 5</string>
     <string name="hr_zones_critical">Critico</string>
 
+    <string name="parameters_view_timer">Tempo</string>
+    <string name="parameters_view_distance">Distanza</string>
+    <string name="parameters_view_calories">Calorie</string>
+    <string name="parameters_view_spm">VPM</string>
+    <string name="parameters_view_time_for_500m">Tempo/500m</string>
+    <string name="parameters_view_total_strokes">Vogate</string>
+    <string name="parameters_view_bpm">BPM</string>
+
     <string-array name="workout_variables">
         <item>Tempo</item>
         <item>Distanza</item>

@@ -12,19 +12,18 @@ import it.paoloinfante.rowerplus.R
 import it.paoloinfante.rowerplus.models.TimerData
 import it.paoloinfante.rowerplus.viewmodels.BleViewModel
 import it.paoloinfante.rowerplus.viewmodels.UsbConnectionViewModel
+import it.paoloinfante.rowerplus.views.parameters.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlin.reflect.KClass
 
 @AndroidEntryPoint
 class WorkoutDataViewFragment(
-    private val dataView: String
+    private val mainDataView: KClass<ViewParameter>
 ) : Fragment(R.layout.fragment_workoutdata_view) {
     companion object {
         const val TAG = "WorkoutDataViewFragment"
     }
-
-    private lateinit var dataViews: Array<String>
-    private lateinit var remainingDataViews: Array<String>
 
     private lateinit var mainTextView: TextView
     private lateinit var descriptionTextView: TextView
@@ -50,6 +49,12 @@ class WorkoutDataViewFragment(
     private val usbConnectionViewModel by activityViewModels<UsbConnectionViewModel>()
     private val bleViewModel by activityViewModels<BleViewModel>()
 
+    private lateinit var parametersClasses: List<KClass<*>>
+    private lateinit var parameters: ArrayList<ViewParameter>
+
+    private lateinit var paramViews: List<TextView>
+    private lateinit var paramTitleViews: List<TextView>
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -68,10 +73,47 @@ class WorkoutDataViewFragment(
         view7TextView = view.findViewById(R.id.workoutData7)
         view7TitleTextView = view.findViewById(R.id.workoutDataTitle7)
 
-        dataViews = requireContext().resources.getStringArray(R.array.workout_variables)
-        remainingDataViews = dataViews.filter { it != dataView }.toTypedArray()
+        paramViews = listOf(
+            view2TextView,
+            view3TextView,
+            view4TextView,
+            view5TextView,
+            view6TextView,
+            view7TextView
+        )
+        paramTitleViews = listOf(
+            view2TitleTextView,
+            view3TitleTextView,
+            view4TitleTextView,
+            view5TitleTextView,
+            view6TitleTextView,
+            view7TitleTextView
+        )
 
-        setTitles()
+        parametersClasses = listOf(
+            TimeParameter::class,
+            DistanceParameter::class,
+            CaloriesParameter::class,
+            SpmParameter::class,
+            TimeFor500Parameter::class,
+            TotalStrokesParameter::class,
+            BpmParameter::class,
+        ).filter { it != mainDataView }
+
+        parameters = ArrayList()
+        parameters.add(
+            mainDataView.constructors.first()
+                .call(requireContext(), mainTextView, descriptionTextView)
+        )
+        parametersClasses.forEachIndexed { index, paramClass ->
+            parameters.add(
+                paramClass.constructors.first().call(
+                    requireContext(),
+                    paramViews[index],
+                    paramTitleViews[index]
+                ) as ViewParameter
+            )
+        }
 
         lifecycleScope.launch {
             async {
@@ -89,12 +131,7 @@ class WorkoutDataViewFragment(
                     )
 
                     mainTextView.isEnabled = it.connected
-                    view2TextView.isEnabled = it.connected
-                    view3TextView.isEnabled = it.connected
-                    view4TextView.isEnabled = it.connected
-                    view5TextView.isEnabled = it.connected
-                    view6TextView.isEnabled = it.connected
-                    view7TextView.isEnabled = it.connected
+                    paramViews.forEach { view -> view.isEnabled = it.connected }
                 }
             }
             async {
@@ -105,171 +142,16 @@ class WorkoutDataViewFragment(
         }
     }
 
-    private fun setTitles() {
-        descriptionTextView.text = dataView
-
-        view2TitleTextView.text = remainingDataViews[0]
-        view3TitleTextView.text = remainingDataViews[1]
-        view4TitleTextView.text = remainingDataViews[2]
-        view5TitleTextView.text = remainingDataViews[3]
-        view6TitleTextView.text = remainingDataViews[4]
-        view7TitleTextView.text = remainingDataViews[5]
-    }
-
     private fun onNewBpm(bpm: Int) {
-        if (dataView == dataViews[6]) {
-            mainTextView.text = getString(R.string.bpm_format, bpm)
-        } else {
-            view7TextView.text = getString(R.string.bpm_format, bpm)
-        }
+        parameters.firstOrNull { it is BpmParameter }
+            ?.update(null, bpm)
     }
 
     private fun onNewStatus(workoutStatus: TimerData) {
-        //TODO: Could as well remove redundancy here
+        Log.d(TAG, "onNewStatus: $workoutStatus")
 
-        Log.d(TAG, "workoutLiveDataUpdate: $workoutStatus")
-
-        when (dataView) {
-            dataViews[0] -> {
-                mainTextView.text =
-                    getString(R.string.timer_format).format(
-                        workoutStatus.timeElapsed / 60,
-                        workoutStatus.timeElapsed % 60
-                    )
-                view2TextView.text =
-                    getString(R.string.distance_format).format(workoutStatus.distance)
-                view3TextView.text =
-                    getString(R.string.calories_format).format(workoutStatus.calories)
-                view4TextView.text =
-                    getString(R.string.current_rpm_format).format(workoutStatus.currentRPM)
-                view5TextView.text =
-                    getString(R.string.time_for_500m_format).format(
-                        workoutStatus.currentSecsFor500M.toInt() / 60,
-                        workoutStatus.currentSecsFor500M.toInt() % 60
-                    )
-                view6TextView.text =
-                    getString(R.string.total_rows_format).format(workoutStatus.rowsCount)
-            }
-            dataViews[1] -> {
-                view2TextView.text =
-                    getString(R.string.timer_format).format(
-                        workoutStatus.timeElapsed / 60,
-                        workoutStatus.timeElapsed % 60
-                    )
-                mainTextView.text =
-                    getString(R.string.distance_format).format(workoutStatus.distance)
-                view3TextView.text =
-                    getString(R.string.calories_format).format(workoutStatus.calories)
-                view4TextView.text =
-                    getString(R.string.current_rpm_format).format(workoutStatus.currentRPM)
-                view5TextView.text =
-                    getString(R.string.time_for_500m_format).format(
-                        workoutStatus.currentSecsFor500M.toInt() / 60,
-                        workoutStatus.currentSecsFor500M.toInt() % 60
-                    )
-                view6TextView.text =
-                    getString(R.string.total_rows_format).format(workoutStatus.rowsCount)
-            }
-            dataViews[2] -> {
-                view2TextView.text =
-                    getString(R.string.timer_format).format(
-                        workoutStatus.timeElapsed / 60,
-                        workoutStatus.timeElapsed % 60
-                    )
-                view3TextView.text =
-                    getString(R.string.distance_format).format(workoutStatus.distance)
-                mainTextView.text =
-                    getString(R.string.calories_format).format(workoutStatus.calories)
-                view4TextView.text =
-                    getString(R.string.current_rpm_format).format(workoutStatus.currentRPM)
-                view5TextView.text =
-                    getString(R.string.time_for_500m_format).format(
-                        workoutStatus.currentSecsFor500M.toInt() / 60,
-                        workoutStatus.currentSecsFor500M.toInt() % 60
-                    )
-                view6TextView.text =
-                    getString(R.string.total_rows_format).format(workoutStatus.rowsCount)
-            }
-            dataViews[3] -> {
-                view2TextView.text =
-                    getString(R.string.timer_format).format(
-                        workoutStatus.timeElapsed / 60,
-                        workoutStatus.timeElapsed % 60
-                    )
-                view3TextView.text =
-                    getString(R.string.distance_format).format(workoutStatus.distance)
-                view4TextView.text =
-                    getString(R.string.calories_format).format(workoutStatus.calories)
-                mainTextView.text =
-                    getString(R.string.current_rpm_format).format(workoutStatus.currentRPM)
-                view5TextView.text =
-                    getString(R.string.time_for_500m_format).format(
-                        workoutStatus.currentSecsFor500M.toInt() / 60,
-                        workoutStatus.currentSecsFor500M.toInt() % 60
-                    )
-                view6TextView.text =
-                    getString(R.string.total_rows_format).format(workoutStatus.rowsCount)
-            }
-            dataViews[4] -> {
-                view2TextView.text =
-                    getString(R.string.timer_format).format(
-                        workoutStatus.timeElapsed / 60,
-                        workoutStatus.timeElapsed % 60
-                    )
-                view3TextView.text =
-                    getString(R.string.distance_format).format(workoutStatus.distance)
-                view4TextView.text =
-                    getString(R.string.calories_format).format(workoutStatus.calories)
-                view5TextView.text =
-                    getString(R.string.current_rpm_format).format(workoutStatus.currentRPM)
-                mainTextView.text =
-                    getString(R.string.time_for_500m_format).format(
-                        workoutStatus.currentSecsFor500M.toInt() / 60,
-                        workoutStatus.currentSecsFor500M.toInt() % 60
-                    )
-                view6TextView.text =
-                    getString(R.string.total_rows_format).format(workoutStatus.rowsCount)
-            }
-            dataViews[5] -> {
-                view2TextView.text =
-                    getString(R.string.timer_format).format(
-                        workoutStatus.timeElapsed / 60,
-                        workoutStatus.timeElapsed % 60
-                    )
-                view3TextView.text =
-                    getString(R.string.distance_format).format(workoutStatus.distance)
-                view4TextView.text =
-                    getString(R.string.calories_format).format(workoutStatus.calories)
-                view5TextView.text =
-                    getString(R.string.current_rpm_format).format(workoutStatus.currentRPM)
-                view6TextView.text =
-                    getString(R.string.time_for_500m_format).format(
-                        workoutStatus.currentSecsFor500M.toInt() / 60,
-                        workoutStatus.currentSecsFor500M.toInt() % 60
-                    )
-                mainTextView.text =
-                    getString(R.string.total_rows_format).format(workoutStatus.rowsCount)
-            }
-            dataViews[6] -> {
-                view2TextView.text =
-                    getString(R.string.timer_format).format(
-                        workoutStatus.timeElapsed / 60,
-                        workoutStatus.timeElapsed % 60
-                    )
-                view3TextView.text =
-                    getString(R.string.distance_format).format(workoutStatus.distance)
-                view4TextView.text =
-                    getString(R.string.calories_format).format(workoutStatus.calories)
-                view5TextView.text =
-                    getString(R.string.current_rpm_format).format(workoutStatus.currentRPM)
-                view6TextView.text =
-                    getString(R.string.time_for_500m_format).format(
-                        workoutStatus.currentSecsFor500M.toInt() / 60,
-                        workoutStatus.currentSecsFor500M.toInt() % 60
-                    )
-                view7TextView.text =
-                    getString(R.string.total_rows_format).format(workoutStatus.rowsCount)
-            }
+        parameters.filter { it !is BpmParameter }.forEach {
+            it.update(workoutStatus, null)
         }
     }
 }

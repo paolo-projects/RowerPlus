@@ -4,7 +4,7 @@
     <string name="calories_format" translatable="false">%.1f kcal</string>
     <string name="current_rpm_format" translatable="false">%.1f</string>
     <string name="time_for_500m_format" translatable="false">%02d:%02d</string>
-    <string name="total_rows_format" translatable="false">%d</string>
+    <string name="total_strokes_format" translatable="false">%d</string>
     <string name="bpm_format" translatable="false">%d</string>
 
     <string name="database_name" translatable="false">rower_plus_db</string>
@@ -77,6 +77,14 @@
     <string name="hr_zones_zone_4">Zone 4</string>
     <string name="hr_zones_zone_5">Zone 5</string>
     <string name="hr_zones_critical">Critical</string>
+
+    <string name="parameters_view_timer">Time</string>
+    <string name="parameters_view_distance">Distance</string>
+    <string name="parameters_view_calories">Calories</string>
+    <string name="parameters_view_spm">SPM</string>
+    <string name="parameters_view_time_for_500m">Time/500m</string>
+    <string name="parameters_view_total_strokes">Total strokes</string>
+    <string name="parameters_view_bpm">BPM</string>
 
     <string-array name="workout_variables">
         <item>Time</item>

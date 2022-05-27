@@ -8,10 +8,8 @@ import android.os.IBinder
 import android.util.Log
 import android.view.*
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import it.paoloinfante.rowerplus.R
 import it.paoloinfante.rowerplus.models.TimerData
@@ -134,7 +132,7 @@ class FloatingWindowService : Service(), FloatingWindowReceiver.MessageListener,
         timeText.text = getString(R.string.timer_format, data.timeElapsed / 60, data.timeElapsed % 60)
         distanceText.text = getString(R.string.distance_format, data.distance)
         caloriesText.text = getString(R.string.calories_format, data.calories)
-        spmText.text = getString(R.string.current_rpm_format, data.currentRPM)
+        spmText.text = getString(R.string.current_rpm_format, data.currentSPM)
     }
 
     override fun onDestroy() {

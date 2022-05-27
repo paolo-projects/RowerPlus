@@ -65,6 +65,8 @@ dependencies {
 
     implementation 'com.github.mik3y:usb-serial-for-android:3.4.3'
 
+    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.6.10'
+
     implementation 'com.google.dagger:hilt-android:2.40.1'
     kapt "com.google.dagger:hilt-compiler:2.40.1"
 

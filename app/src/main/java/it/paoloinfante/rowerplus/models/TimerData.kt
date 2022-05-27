@@ -7,8 +7,8 @@ data class TimerData (
     var timeElapsed: Int,
     var calories: Float,
     var distance: Float,
-    var rowsCount: Int,
-    var currentRPM: Float,
+    var strokesCount: Int,
+    var currentSPM: Float,
     var currentSecsFor500M: Float
 ): Parcelable {
     constructor(parcel: Parcel) : this(
@@ -26,8 +26,8 @@ data class TimerData (
         parcel.writeInt(timeElapsed)
         parcel.writeFloat(calories)
         parcel.writeFloat(distance)
-        parcel.writeInt(rowsCount)
-        parcel.writeFloat(currentRPM)
+        parcel.writeInt(strokesCount)
+        parcel.writeFloat(currentSPM)
         parcel.writeFloat(currentSecsFor500M)
     }
 

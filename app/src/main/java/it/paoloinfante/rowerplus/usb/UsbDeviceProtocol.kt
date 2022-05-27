@@ -11,7 +11,7 @@ import java.util.*
 import java.util.concurrent.TimeoutException
 import kotlin.concurrent.thread
 
-/*  TODO: The USB HID has to be tested
+/*  TODO: The USB HID protocol is not ready. It has to be tested
     Advantages over USB-UART: can use custom VID/PID and register
     only the specific device with the application
     The higher bandwidth allows sending raw angular velocity
