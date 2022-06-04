@@ -14,8 +14,8 @@ class TimeParameter(private val context: Context, viewAttached: TextView, titleV
     override fun getStatusProperty(status: TimerData?, bpmValue: Int?): String {
         return context.getString(
             R.string.timer_format,
-            status!!.timeElapsed / 60,
-            status.timeElapsed % 60
+            (status!!.timeElapsed / 60).toInt(),
+            (status.timeElapsed % 60).toInt()
         )
     }
 }

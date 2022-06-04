@@ -17,8 +17,8 @@ class TimeFor500Parameter(
     override fun getStatusProperty(status: TimerData?, bpmValue: Int?): String {
         return context.getString(
             R.string.time_for_500m_format,
-            status!!.currentSecsFor500M / 60,
-            status.currentSecsFor500M % 60
+            (status!!.currentSecsFor500M / 60).toInt(),
+            (status.currentSecsFor500M % 60).toInt()
         )
     }
 }
