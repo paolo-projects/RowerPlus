@@ -50,21 +50,12 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: apk  
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }} 
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }} 
-      - name: Upload Release APK
-        id: upload_release_asset
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: apk/app-debug.apk
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: apk/app-debug.apk
           asset_name: rowerplus-debug.apk
-          asset_content_type: application/zip
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "Auto-published release with debug apk"
